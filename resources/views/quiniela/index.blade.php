@@ -16,6 +16,7 @@
                     <th>#</th>
                     <th>Jugador</th>
                     <th>Jornada</th>
+                    <th># Quinielas</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -25,6 +26,7 @@
                         <td>{{ $quiniela->id }}</td>
                         <td>{{ $quiniela->jugador->nombre }}</td>
                         <td>{{ $quiniela->numero }}</td>
+                        <td>{{ $quiniela->numero_quiniela }}</td>
                         <td>
                             <a href="{{ route('quiniela.show', $quiniela->id) }}" class="btn btn-primary btn-sm">Ver</a>
                             <form action="{{ route('quinielas.destroy', $quiniela->id) }}" method="POST"
