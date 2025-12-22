@@ -1,0 +1,76 @@
+body {
+    background-color: #003300; /* Verde oscuro */
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.card {
+    background-color: #004d00;
+    border: 1px solid #ffaa00; /* Dorado */
+    border-radius: 8px;
+}
+.card-header {
+    background-color: #ffaa00 !important;
+    color: #003300 !important;
+}
+
+.card-header {
+    background-color: #ffaa00;
+    color: #003300;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.table th {
+    background-color: #006600;
+    color: #ffffff;
+}
+
+.table td {
+    background-color: #e6ffe6;
+    color: #003300;
+}
+
+input[type="text"], input[type="radio"] {
+    border: 2px solid #ffaa00;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+.btn-primary {
+    background-color: #ffaa00;
+    color: #003300;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-success {
+    background-color: #00cc66;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #ffcc00;
+    color: #003300;
+    border: none;
+}
+
+.btn-secondary {
+    background-color: #999999;
+    color: #ffffff;
+    border: none;
+}
+
+.btn-lg {
+    font-size: 1.2rem;
+    padding: 12px 24px;
+    border-radius: 8px;
+}
+.jornada-info {
+    background-color: #004d00;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+}
