@@ -7,6 +7,7 @@ use App\Models\Jugador;
 use App\Models\Quiniela;
 use App\Models\Respuestas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class QuinielaPublicController extends Controller
 {
@@ -22,8 +23,9 @@ class QuinielaPublicController extends Controller
             'premio' => $jornadaModelo->premio,
         ];
 
-        $partidos = $jornadaModelo->partidos->map(function ($p) {
+        $partidos = $jornadaModelo->partidos->map(function ($p, $idx) {
             return [
+                'partido_numero' => $idx + 1,
                 'local' => $p->local,
                 'visitante' => $p->visitante,
             ];
@@ -32,41 +34,51 @@ class QuinielaPublicController extends Controller
         return view('quiniela.public', compact('jornada', 'partidos'));
     }
 
-    // Guardar quiniela pública
+    // Guardar quinielas públicas (JSON desde fetch)
+    public function store(Request $request)
+    {
+        $quinielas = $request->input('quinielas');
 
+        if (!is_array($quinielas) || count($quinielas) === 0) {
+            return response()->json([
+                'success' => false,
+                'error' => 'No se recibieron quinielas válidas.'
+            ], 422);
+        }
 
-   public function store(Request $request)
-{
-    $quinielas = $request->input('quinielas');
+        try {
+            DB::beginTransaction();
 
-    if (!is_array($quinielas) || count($quinielas) === 0) {
-        return response()->json([
-            'success' => false,
-            'error' => 'No se recibieron quinielas válidas.'
-        ]);
-    }
+            $jugador = null;
+            $totalGuardadas = 0;
 
-    try {
-        $jugador = null;
-        $totalGuardadas = 0;
+            foreach ($quinielas as $q) {
+                // Validación mínima
+                if (
+                    empty($q['nombre']) ||
+                    empty($q['telefono']) ||
+                    !isset($q['numero']) ||
+                    !isset($q['resultados']) ||
+                    !is_array($q['resultados']) ||
+                    count($q['resultados']) === 0
+                ) {
+                    throw new \Exception('Estructura de quiniela inválida.');
+                }
 
-        foreach ($quinielas as $q) {
-            // Crear o recuperar jugador
-            $jugador = Jugador::firstOrCreate([
-                'nombre' => $q['nombre'],
-                'telefono' => $q['telefono'],
-            ]);
+                // Crear o recuperar jugador (pagada está en jugadores, no en quinielas)
+                $jugador = Jugador::firstOrCreate([
+                    'nombre' => $q['nombre'],
+                    'telefono' => $q['telefono'],
+                ]);
 
-            // Crear quiniela asociada
-            $quiniela = Quiniela::create([
-                'jugador_id' => $jugador->id,
-                'numero' => $q['numero'], // jornada
-                'numero_quiniela' => uniqid(),
-                'pagada' => false,
-            ]);
+                // Crear quiniela asociada (sin 'pagada', porque no existe en esta tabla)
+                $quiniela = Quiniela::create([
+                    'jugador_id' => $jugador->id,
+                    'numero' => $q['numero'], // jornada
+                    'numero_quiniela' => uniqid(),
+                ]);
 
-            // Guardar respuestas
-            if (isset($q['resultados']) && is_array($q['resultados'])) {
+                // Guardar respuestas
                 foreach ($q['resultados'] as $partido_numero => $respuesta) {
                     Respuestas::create([
                         'quiniela_id' => $quiniela->id,
@@ -74,23 +86,24 @@ class QuinielaPublicController extends Controller
                         'respuesta' => $respuesta,
                     ]);
                 }
+
+                $totalGuardadas++;
             }
 
-            $totalGuardadas++;
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "✅ Se guardaron {$totalGuardadas} quiniela(s) correctamente.",
+                'jugador_id' => $jugador->id,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => "✅ Se guardaron {$totalGuardadas} quiniela(s) correctamente.",
-            'jugador_id' => $jugador->id,
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage()
-        ], 500);
     }
-}
-
 }

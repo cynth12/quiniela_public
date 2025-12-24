@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quiniela extends Model
 {
-    protected $fillable = ['jugador_id', 'numero', 'numero_quiniela', 'pagada'];
+    protected $fillable = ['jugador_id', 'numero', 'numero_quiniela'];
 
     public function jugador()
     {

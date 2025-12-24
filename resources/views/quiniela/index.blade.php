@@ -15,9 +15,8 @@
         <tr>
             <th>#</th>
             <th>Jugador</th>
-            <th>Teléfono</th>
             <th>Jornada</th>
-            <th>Identificador</th>
+            <th>Quinielas</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -26,7 +25,6 @@
             <tr>
                 <td>{{ $q->id }}</td>
                 <td>{{ $q->jugador->nombre }}</td>
-                <td>{{ $q->jugador->telefono }}</td>
                 <td>{{ $q->numero }}</td>
                 <td>{{ $q->numero_quiniela }}</td>
                 <td>
