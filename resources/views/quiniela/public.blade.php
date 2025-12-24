@@ -88,14 +88,16 @@
                     </form>
 
                     <div class="text-left mt-4" style="color: white;">
-                        <button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
-                            💳 Pagar con Mercado Pago
+                        <button type="button" class="btn btn-primary btn-lg w-100" onclick="guardarQuiniela()">
+                        💾 Guardar Quinielas
                         </button>
+                        <!--<button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
+                            💳 Pagar con Mercado Pago
+                        </button>-->
 
                         <p class="mt-2 mb-1">Costo por quiniela: <strong>$10 MXN</strong></p>
                         <p id="resumen">0 quinielas – Total: $0 MXN</p>
                         <div id="listaQuinielas"></div>
-                    
                     </div>
                 </div>
             </div>

@@ -10,29 +10,32 @@
     <div class="card">
        <h2>Lista de jugadores registrados</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Jornada</th>
-            <th>Quinielas</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($jugadores as $j)
-    <tr>
-        <td>{{ $j->id }}</td>
-        <td>{{ $j->nombre }}</td>
-        <td>{{ $j->telefono }}</td>
-        <td>{{ $j->numero }}</td>
-        <td>{{ $j->quinielas->count() }} quinielas</td>
-    </tr>
-@endforeach
-    </tbody>
-</table>
-
+       <table class="table">
+           <thead>
+               <tr>
+                   <th>ID</th>
+                   <th>Nombre</th>
+                   <th>Teléfono</th>
+                   <th>Estado</th>
+               </tr>
+           </thead>
+           <tbody>
+               @foreach($jugadores as $j)
+                   <tr>
+                       <td>{{ $j->id }}</td>
+                       <td>{{ $j->nombre }}</td>
+                       <td>{{ $j->telefono }}</td>
+                       <td>
+                           @if($j->quinielas->where('pagada', true)->count() > 0)
+                               <span class="badge bg-success">Pagada</span>
+                           @else
+                               <span class="badge bg-warning">Pendiente</span>
+                           @endif
+                       </td>
+                   </tr>
+               @endforeach
+           </tbody>
+       </table>
     </div>
 @stop
 

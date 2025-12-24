@@ -27,3 +27,5 @@ class Quiniela extends Model
     });
 }
 }
+
+

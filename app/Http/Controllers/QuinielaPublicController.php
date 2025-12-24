@@ -33,7 +33,9 @@ class QuinielaPublicController extends Controller
     }
 
     // Guardar quiniela pública
-    public function store(Request $request)
+
+
+   public function store(Request $request)
 {
     $quinielas = $request->input('quinielas');
 
@@ -46,6 +48,7 @@ class QuinielaPublicController extends Controller
 
     try {
         $jugador = null;
+        $totalGuardadas = 0;
 
         foreach ($quinielas as $q) {
             // Crear o recuperar jugador
@@ -63,18 +66,22 @@ class QuinielaPublicController extends Controller
             ]);
 
             // Guardar respuestas
-            foreach ($q['resultados'] as $partido_numero => $respuesta) {
-                Respuestas::create([
-                    'quiniela_id' => $quiniela->id,
-                    'partido_numero' => $partido_numero + 1,
-                    'respuesta' => $respuesta,
-                ]);
+            if (isset($q['resultados']) && is_array($q['resultados'])) {
+                foreach ($q['resultados'] as $partido_numero => $respuesta) {
+                    Respuestas::create([
+                        'quiniela_id' => $quiniela->id,
+                        'partido_numero' => $partido_numero + 1,
+                        'respuesta' => $respuesta,
+                    ]);
+                }
             }
+
+            $totalGuardadas++;
         }
 
-        // Devolver el jugador_id para redirigir al pago
         return response()->json([
             'success' => true,
+            'message' => "✅ Se guardaron {$totalGuardadas} quiniela(s) correctamente.",
             'jugador_id' => $jugador->id,
         ]);
 
@@ -85,4 +92,5 @@ class QuinielaPublicController extends Controller
         ], 500);
     }
 }
+
 }

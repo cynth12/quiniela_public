@@ -1,11 +1,13 @@
 console.log('✅ Script quinielas.js cargado correctamente');
+
 let quinielas = [];
 const costoPorQuiniela = 10;
 
+// Agregar una quiniela al array
 function agregarQuiniela() {
     const nombre = document.getElementById('nombre').value.trim();
     const telefono = document.getElementById('telefono').value.trim();
-    const numero = document.querySelector('input[name="numero"]').value; // ← jornada
+    const numero = document.querySelector('input[name="numero"]').value; // jornada
 
     if (!nombre || !telefono) {
         mostrarPopup('Por favor ingresa tu nombre y número.');
@@ -18,20 +20,29 @@ function agregarQuiniela() {
     for (let i = 0; i < totalPartidos; i++) {
         const seleccion = document.querySelector(`input[name="resultados[${i}]"]:checked`);
         if (!seleccion) {
-            mostrarPopup(`Por favor selecciona una opción para todos los partidos.`);
+            mostrarPopup(`Selecciona una opción para todos los partidos.`);
             return;
         }
         resultados.push(seleccion.value);
     }
 
-    
-    quinielas.push({ numero, nombre, telefono, resultados, });
+    const quiniela = {
+        numero,
+        nombre,
+        telefono,
+        resultados
+    };
+
+    quinielas.push(quiniela);
 
     actualizarResumen();
     mostrarQuinielas();
     limpiar();
+
+    console.log('✅ Quiniela agregada:', quiniela);
 }
 
+// Generar resultados aleatorios
 function aleatorio() {
     const totalPartidos = document.querySelectorAll('tbody tr').length;
     for (let i = 0; i < totalPartidos; i++) {
@@ -41,32 +52,39 @@ function aleatorio() {
     }
 }
 
+// Limpiar selección de radios
 function limpiar() {
     const radios = document.querySelectorAll('input[type="radio"]');
     radios.forEach(r => r.checked = false);
 }
 
+// Actualizar resumen de quinielas
 function actualizarResumen() {
     const total = quinielas.length * costoPorQuiniela;
     document.getElementById('resumen').innerText = `${quinielas.length} quiniela(s) – Total: $${total} MXN`;
 }
 
+// Mostrar lista de quinielas agregadas
 function mostrarQuinielas() {
     const contenedor = document.getElementById('listaQuinielas');
     contenedor.innerHTML = '';
     quinielas.forEach((q, index) => {
         const div = document.createElement('div');
         div.classList.add('alert', 'alert-light', 'mt-2');
-        div.innerHTML = `<strong>#${index + 1} – ${q.nombre}</strong><br>${q.resultados.map(r => r).join(' – ')}`;
+        div.innerHTML = `<strong>#${index + 1} – ${q.nombre}</strong><br>${q.resultados.join(' – ')}`;
         contenedor.appendChild(div);
     });
 }
 
-function pagarConMercadoPago() {
+
+// Guardar quinielas sin pagar
+function guardarQuiniela() {
     if (quinielas.length === 0) {
-        mostrarPopup('❌ No hay quinielas para pagar.');
+        mostrarPopup('❌ No hay quinielas para guardar.');
         return;
     }
+
+    console.log('🔍 Quinielas que se van a guardar:', quinielas);
 
     fetch('/public/quiniela', {
         method: 'POST',
@@ -79,19 +97,20 @@ function pagarConMercadoPago() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success && data.jugador_id) {
-            window.location.href = `/pago/${data.jugador_id}`;
+        if (data.success) {
+            mostrarPopup(data.message || '✅ Quinielas guardadas correctamente.');
         } else {
-            mostrarPopup('⚠️ Error: no se recibió el jugador para el pago.');
+            mostrarPopup('❌ Error: ' + (data.error || 'No se pudo guardar.'));
         }
     })
     .catch(err => {
         console.error(err);
-        mostrarPopup('❌ Error al iniciar el pago.');
+        mostrarPopup('❌ Error al guardar la quiniela.');
     });
 }
 
 
+// Popup de mensajes
 function mostrarPopup(mensaje) {
     const popup = document.createElement('div');
     popup.classList.add('popup-aviso');
@@ -107,41 +126,6 @@ function mostrarPopup(mensaje) {
 function cerrarPopup() {
     const popup = document.querySelector('.popup-aviso');
     if (popup) popup.remove();
-}
-
-
-
-function guardarQuiniela() {
-    if (quinielas.length === 0) {
-        mostrarPopup('❌ No hay quinielas para guardar.');
-        return;
-    }
-
-    fetch('/public/quiniela', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-
-        body: JSON.stringify({ quinielas }) // ← enviamos todas
-        
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            mostrarPopup('✅ Quiniela guardada correctamente.');
-            // Limpieza visual y lógica
-            
-        } else {
-            mostrarPopup('❌ Error: ' + (data.error || 'No se pudo guardar.'));
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        mostrarPopup('❌ Error al guardar la quiniela.');
-    });
 }
 
     

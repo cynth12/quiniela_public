@@ -48,6 +48,8 @@ use App\Http\Controllers\QuinielaController;
 Route::get('/quiniela', [QuinielaController::class, 'index'])->name('quiniela.index');
 Route::get('/quiniela/{id}', [QuinielaController::class, 'show'])->name('quiniela.show');
 Route::delete('/quinielas/{id}', [QuinielaController::class, 'destroy'])->name('quinielas.destroy');
+Route::get('/quinielas/jugador/{id}', [QuinielaController::class, 'verPorJugador'])->name('quiniela.jugador');
+
 
 use App\Http\Controllers\PagoController;
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
