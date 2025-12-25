@@ -13,8 +13,8 @@ class QuinielaController extends Controller
      */
     public function index()
     {
-        $quinielas = Quiniela::with('jugador')->latest()->get();
-        return view('quiniela.index', compact('quinielas'));
+        $jugadores = Jugador::with('quinielas')->get();
+        return view('quiniela.index', compact('jugadores'));
     }
 
     /**

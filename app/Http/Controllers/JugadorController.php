@@ -60,6 +60,7 @@ class JugadorController extends Controller
      */
     public function destroy(Jugador $jugador)
     {
-        
+        foreach ($jugador->quinielas as $q) { $q->respuestas()->delete(); $q->delete(); } $jugador->delete(); 
+        return redirect()->route('quiniela.index')->with('success', 'Jugador y sus quinielas eliminados correctamente.');
     }
 }

@@ -16,7 +16,12 @@ use App\Http\Controllers\JugadorController;
 Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.index');
 Route::get('/jugadores/create', [JugadorController::class, 'create'])->name('jugadores.create');
 Route::post('/jugadores', [JugadorController::class, 'store'])->name('jugadores.store');
-Route::delete('/jugadores/{id}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
+Route::delete('/jugadores/{jugador}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
+
+
+
+
+
 
 
 
