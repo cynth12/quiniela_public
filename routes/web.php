@@ -9,7 +9,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->middleware('auth')->name('home');
+Route::get('/home', [HomeController::class, 'index'])
+    ->middleware('auth')
+    ->name('home');
 
 use App\Http\Controllers\JugadorController;
 
@@ -17,14 +19,6 @@ Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.i
 Route::get('/jugadores/create', [JugadorController::class, 'create'])->name('jugadores.create');
 Route::post('/jugadores', [JugadorController::class, 'store'])->name('jugadores.store');
 Route::delete('/jugadores/{jugador}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
-
-
-
-
-
-
-
-
 
 use App\Http\Controllers\JornadaController;
 
@@ -37,24 +31,26 @@ Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name(
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
 Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'])->name('jornada.show.numero');
 
-
-
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');
 Route::post('/public/quiniela', [QuinielaPublicController::class, 'store'])->name('quiniela.store');
-
+Route::get('/quiniela/pagar/{jugador}', [QuinielaPublicaController::class, 'pagar'])->name('quiniela.pagar');
+Route::get('/quiniela/exito', function () {
+    return view('quiniela.exito');
+})->name('quiniela.exito');
+Route::get('/quiniela/fallo', function () {
+    return view('quiniela.fallo');
+})->name('quiniela.fallo');
 
 use App\Http\Controllers\ResultadoController;
 Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');
 Route::post('/resultados/{numero}/guardar', [ResultadoController::class, 'guardarResultados'])->name('resultados.guardar');
-
 
 use App\Http\Controllers\QuinielaController;
 Route::get('/quiniela', [QuinielaController::class, 'index'])->name('quiniela.index');
 Route::get('/quiniela/{id}', [QuinielaController::class, 'show'])->name('quiniela.show');
 Route::delete('/quinielas/{id}', [QuinielaController::class, 'destroy'])->name('quinielas.destroy');
 Route::get('/quinielas/jugador/{id}', [QuinielaController::class, 'verPorJugador'])->name('quiniela.jugador');
-
 
 use App\Http\Controllers\PagoController;
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');

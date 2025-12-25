@@ -89,8 +89,13 @@
 
                     <div class="text-left mt-4" style="color: white;">
                         <button type="button" class="btn btn-primary btn-lg w-100" onclick="guardarQuiniela()">
-                        💾 Guardar Quinielas
+                            💾 Guardar Quinielas
                         </button>
+                        <a href="{{ route('quiniela.pagar', $jugador->id) }}" class="btn btn-success">
+                            💳 Pagar con Mercado Pago
+                        </a>
+
+
                         <!--<button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
                             💳 Pagar con Mercado Pago
                         </button>-->
@@ -103,6 +108,7 @@
             </div>
             <script></script>
             <script src="{{ asset('js/quiniela.js') }}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

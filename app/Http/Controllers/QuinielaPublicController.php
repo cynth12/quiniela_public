@@ -106,4 +106,36 @@ class QuinielaPublicController extends Controller
             ], 500);
         }
     }
-}
+
+    public function pagar($jugadorId) 
+    { 
+        
+        $jugador = Jugador::findOrFail($jugadorId); 
+        SDK::setAccessToken(env('MP_ACCESS_TOKEN')); 
+        $item = new Item(); 
+        $item->title = 'Quiniela Jornada ' . $jugador->numero; 
+        $item->quantity = $jugador->quinielas()->count(); 
+        $item->unit_price = 10; // costo por quiniela 
+        $preference = new Preference(); 
+        $preference->items = [$item]; 
+        $preference->back_urls = [ "success" => route('quiniela.exito'), "failure" => route('quiniela.fallo'), ]; 
+        $preference->auto_return = "approved"; 
+        $preference->external_reference = $jugador->id; 
+        $preference->save(); 
+        
+        return redirect($preference->init_point); 
+    } 
+        
+        public function webhook(Request $request) 
+        
+        { $id = $request->input('data.id'); 
+            $payment = \MercadoPago\Payment::find_by_id($id); 
+            if ($payment->status === 'approved') 
+                { $jugadorId = $payment->external_reference; 
+                Jugador::where('id', $jugadorId)->update(['pagada' => true]); 
+            } 
+            
+            return response()->json(['status' => 'ok']); 
+        } 
+    }
+
