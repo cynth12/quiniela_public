@@ -91,9 +91,12 @@
                         <button type="button" class="btn btn-primary btn-lg w-100" onclick="guardarQuiniela()">
                             💾 Guardar Quinielas
                         </button>
-                        <a href="{{ route('quiniela.pagar', $jugador->id) }}" class="btn btn-success">
-                            💳 Pagar con Mercado Pago
-                        </a>
+                        @if (isset($jugador))
+                            <a href="{{ route('quiniela.pagar', $jugador->id) }}" class="btn btn-success">
+                                💳 Pagar con Mercado Pago
+                            </a>
+                        @endif
+
 
 
                         <!--<button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
