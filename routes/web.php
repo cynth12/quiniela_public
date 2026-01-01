@@ -34,13 +34,10 @@ Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');
 Route::post('/public/quiniela', [QuinielaPublicController::class, 'store'])->name('quiniela.store');
-Route::get('/quiniela/pagar/{jugador}', [QuinielaPublicaController::class, 'pagar'])->name('quiniela.pagar');
-Route::get('/quiniela/exito', function () {
-    return view('quiniela.exito');
-})->name('quiniela.exito');
-Route::get('/quiniela/fallo', function () {
-    return view('quiniela.fallo');
-})->name('quiniela.fallo');
+Route::get('/quiniela/pagar/{jugador}', [QuinielaPublicController::class, 'pagar'])->name('quiniela.pagar');
+Route::get('/quiniela/exito', [QuinielaPublicController::class, 'exito'])->name('quiniela.exito');
+Route::get('/quiniela/fallo', [QuinielaPublicController::class, 'fallo'])->name('quiniela.fallo');
+Route::post('/webhook/mp', [QuinielaPublicController::class, 'webhook'])->name('mp.webhook');
 
 use App\Http\Controllers\ResultadoController;
 Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');

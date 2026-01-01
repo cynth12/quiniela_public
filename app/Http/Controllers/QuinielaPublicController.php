@@ -8,11 +8,16 @@ use App\Models\Quiniela;
 use App\Models\Respuestas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use MercadoPago\SDK; 
+use MercadoPago\Resources\Item; 
+use MercadoPago\Resources\Preference; 
+use MercadoPago\Resources\Payment;
+
 
 class QuinielaPublicController extends Controller
 {
     // Mostrar jornada y partidos por número
-    public function jornadaPorNumero($numero)
+    public function jornadaPorNumero($numero, Request $request)
     {
         $jornadaModelo = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
@@ -31,7 +36,11 @@ class QuinielaPublicController extends Controller
             ];
         });
 
-        return view('quiniela.public', compact('jornada', 'partidos'));
+        $jugador = null;
+        if ($request->has('jugador_id')) 
+            { $jugador = Jugador::find($request->jugador_id); }
+
+        return view('quiniela.public', compact('jornada', 'partidos', 'jugador'));
     }
 
     // Guardar quinielas públicas (JSON desde fetch)
@@ -96,6 +105,8 @@ class QuinielaPublicController extends Controller
                 'success' => true,
                 'message' => "✅ Se guardaron {$totalGuardadas} quiniela(s) correctamente.",
                 'jugador_id' => $jugador->id,
+                'cantidad' => $totalGuardadas,
+                'total' => $totalGuardadas * 10,
             ]);
 
         } catch (\Exception $e) {
@@ -108,30 +119,39 @@ class QuinielaPublicController extends Controller
     }
 
     public function pagar($jugadorId) 
-    { 
-        
-        $jugador = Jugador::findOrFail($jugadorId); 
-        SDK::setAccessToken(env('MP_ACCESS_TOKEN')); 
-        $item = new Item(); 
-        $item->title = 'Quiniela Jornada ' . $jugador->numero; 
-        $item->quantity = $jugador->quinielas()->count(); 
-        $item->unit_price = 10; // costo por quiniela 
-        $preference = new Preference(); 
-        $preference->items = [$item]; 
-        $preference->back_urls = [ "success" => route('quiniela.exito'), "failure" => route('quiniela.fallo'), ]; 
-        $preference->auto_return = "approved"; 
-        $preference->external_reference = $jugador->id; 
-        $preference->save(); 
-        
-        return redirect($preference->init_point); 
-    } 
+    {   
+    $jugador = Jugador::with('quinielas')->findOrFail($jugadorId); 
+    $cantidad = $jugador->quinielas->count(); 
+    $total = $cantidad * 10; 
+
+    SDK::setAccessToken(env('MP_ACCESS_TOKEN'));
+     
+    $item = new Item(); 
+     $item->title = 'Quinielas de ' . $jugador->nombre; 
+     $item->quantity = 1; 
+     $item->unit_price = $total; 
+     
+     $preference = new Preference(); 
+     $preference->items = [$item]; 
+
+     $preference->back_urls = [ 
+    "success" => route('quiniela.exito'),
+    "failure" => route('quiniela.fallo'),
+
+    ];
+     $preference->auto_return = "approved"; 
+     $preference->external_reference = $jugador->id; 
+     $preference->save(); 
+
+     return redirect($preference->init_point); 
+    }
         
         public function webhook(Request $request) 
         
         { $id = $request->input('data.id'); 
-            $payment = \MercadoPago\Payment::find_by_id($id); 
-            if ($payment->status === 'approved') 
-                { $jugadorId = $payment->external_reference; 
+            $payment = Payment::find_by_id($id);
+            if ($payment && $payment->status === 'approved'){ 
+                $jugadorId = (int) $payment->external_reference;
                 Jugador::where('id', $jugadorId)->update(['pagada' => true]); 
             } 
             

@@ -103,7 +103,7 @@ function guardarQuiniela() {
         return;
     }
 
-    console.log('🔍 Quinielas que se van a guardar:', quinielas);
+    
 
     fetch('/public/quiniela', {
         method: 'POST',
@@ -118,10 +118,20 @@ function guardarQuiniela() {
     .then(data => {
         if (data.success) {
             Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Procede a tu pago.', 'success');
+            const numero = quinielas[0]?.numero || 6; // usa el número de jornada de la primera quiniela
+
             quinielas = [];
             document.getElementById('listaQuinielas').innerHTML = '';
-            document.getElementById('resumen').innerText = '';
-            window.history.replaceState({}, '', '/quiniela');
+            
+            const resumen = document.getElementById('resumen');
+            resumen.innerHTML = `
+            <p><strong>Total de quinielas:</strong> ${data.cantidad}</p>
+            <p><strong>Total a pagar:</strong> $${data.total} MXN</p>
+            <a href="/quiniela/pagar/${data.jugador_id}" class="btn btn-lg btn-success w-100 mt-3" style="font-size: 1.2rem; padding: 12px;">
+                    💳 Pagar con Mercado Pago
+                </a>
+            `;
+        
         } else {
             Swal.fire('Error', '❌ ' + (data.error || 'No se pudo guardar.'), 'error');
         }

@@ -27,3 +27,5 @@ class Pago extends Model
                     ->whereColumn('numero', 'numero');
     }
 }
+
+
