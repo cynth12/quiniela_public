@@ -2,6 +2,8 @@ console.log('✅ Script quinielas.js cargado correctamente');
 
 let quinielas = [];
 const costoPorQuiniela = 10;
+let quinielasGuardadas = false; // bandera para evitar duplicados
+
 
 // Validar teléfono (10 dígitos)
 function telefonoValido(numero) {
@@ -90,8 +92,15 @@ function mostrarQuinielas() {
     });
 }
 
+
 // Guardar quinielas sin pagar
 function guardarQuiniela() {
+
+
+    if (quinielasGuardadas) { 
+        Swal.fire('Ya guardaste tus quinielas', 'Procede al pago. No puedes volver a guardar esta jornada.', 'info'); 
+        return; }
+
     if (quinielas.length === 0) {
         Swal.fire('Sin quinielas', '❌ No hay quinielas para guardar.', 'warning');
         return;
@@ -118,6 +127,7 @@ function guardarQuiniela() {
     .then(data => {
         if (data.success) {
             Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Procede a tu pago.', 'success');
+            quinielasGuardadas = true; // 🔒 bloquear guardado document.getElementById('guardarBtn').disabled = true; // desactivar botón guardar
             const numero = quinielas[0]?.numero || 6; // usa el número de jornada de la primera quiniela
 
             quinielas = [];
