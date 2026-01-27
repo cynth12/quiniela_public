@@ -37,6 +37,15 @@ class PagoController extends Controller
         $preference->items = [$item];
 
         $preference->external_reference = "ID:{$jugador->id}-Tel:{$jugador->telefono}";
+
+        $preference->back_urls = [
+            "success" => route('pagos.success'),
+            "failure" => route('pagos.failure'),
+            "pending" => route('pagos.pending'),
+        ];
+        $preference->auto_return = "approved";
+
+
         $preference->save();
 
         return redirect($preference->init_point);
@@ -107,4 +116,20 @@ class PagoController extends Controller
 
         return redirect()->route('pagos.index')->with('success', 'Pago y comprobante eliminados correctamente.');
     }
+
+    public function success()
+    {
+    return view('pagos.success')->with('mensaje', '¡Pago aprobado! Gracias por participar.');
+    }
+
+    public function failure()
+    {
+    return view('pagos.failure')->with('mensaje', 'El pago fue rechazado o cancelado.');
+    }
+
+    public function pending()
+    {
+    return view('pagos.pending')->with('mensaje', 'Tu pago está pendiente de confirmación.');
+    }
+
 }
