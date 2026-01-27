@@ -125,6 +125,7 @@ class QuinielaPublicController extends Controller
     $total = $cantidad * 10; 
 
     SDK::setAccessToken(env('MERCADOPAGO_TOKEN'));
+
      
     $item = new Item(); 
      $item->title = 'Quinielas de ' . $jugador->nombre; 
