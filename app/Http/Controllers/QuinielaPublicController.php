@@ -8,7 +8,8 @@ use App\Models\Quiniela;
 use App\Models\Respuestas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use MercadoPago\SDK; 
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Resources\Item; 
 use MercadoPago\Resources\Preference; 
 use MercadoPago\Resources\Payment;
@@ -119,32 +120,32 @@ class QuinielaPublicController extends Controller
     }
 
     public function pagar($jugadorId) 
-    {   
-    $jugador = Jugador::with('quinielas')->findOrFail($jugadorId); 
-    $cantidad = $jugador->quinielas->count(); 
-    $total = $cantidad * 10; 
+    { 
+        $jugador = Jugador::with('quinielas')->findOrFail($jugadorId); 
+        $cantidad = $jugador->quinielas->count(); 
+        $total = $cantidad * 10;
 
-    SDK::setAccessToken(env('MERCADOPAGO_TOKEN'));
+    
+    MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-     
-    $item = new Item(); 
-     $item->title = 'Quinielas de ' . $jugador->nombre; 
-     $item->quantity = 1; 
-     $item->unit_price = $total; 
-     
-     $preference = new Preference(); 
-     $preference->items = [$item]; 
+    $client = new PreferenceClient();([
+        "items" => [ 
+            [ "title" => 
+        'Quinielas de ' . $jugador->nombre, 
+        "quantity" => 1, 
+        "unit_price" => $total, 
+        ]
+        ],
+        "back_urls" => [
+            "success" => route('quiniela.exito'),
+            "failure" => route('quiniela.fallo'),
+            "pending" => route('quiniela.pendiente'),
+            ],
+            "auto_return" => "approved",
+            "external_reference" => (string) $jugador->id,
+        ]);
 
-     $preference->back_urls = [ 
-    "success" => route('quiniela.exito'),
-    "failure" => route('quiniela.fallo'),
-
-    ];
-     $preference->auto_return = "approved"; 
-     $preference->external_reference = $jugador->id; 
-     $preference->save(); 
-
-     return redirect($preference->init_point); 
+     return redirect()->away($preference->init_point);
     }
         
         public function webhook(Request $request) 

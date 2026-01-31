@@ -8,7 +8,7 @@ use App\Models\Quiniela;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Pago;
 use App\Models\Jugador;
-use MercadoPago\SDK;
+use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Preference;
 use MercadoPago\Item;
 use MercadoPago\Payment;
@@ -26,7 +26,7 @@ class PagoController extends Controller
     {
         $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
 
-        SDK::setAccessToken(env('MERCADOPAGO_TOKEN'));
+        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
         $preference = new Preference();
 
