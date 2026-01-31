@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
-use MercadoPago\Resources\Item; 
-use MercadoPago\Resources\Preference; 
-use MercadoPago\Resources\Payment;
+use MercadoPago\Client\Payment\PaymentClient;
 
 
 class QuinielaPublicController extends Controller
@@ -128,7 +126,8 @@ class QuinielaPublicController extends Controller
     
     MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-    $client = new PreferenceClient();([
+    $client = new PreferenceClient();
+    $preference = $client->create([
         "items" => [ 
             [ "title" => 
         'Quinielas de ' . $jugador->nombre, 
@@ -145,13 +144,19 @@ class QuinielaPublicController extends Controller
             "external_reference" => (string) $jugador->id,
         ]);
 
+        
+
      return redirect()->away($preference->init_point);
     }
         
         public function webhook(Request $request) 
         
-        { $id = $request->input('data.id'); 
-            $payment = Payment::find_by_id($id);
+        { $id = $request->input('data.id');
+        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
+
+            $client = new PaymentClient();
+            $payment = $client->get($id);
+
             if ($payment && $payment->status === 'approved'){ 
                 $jugadorId = (int) $payment->external_reference;
                 Jugador::where('id', $jugadorId)->update(['pagada' => true]); 
