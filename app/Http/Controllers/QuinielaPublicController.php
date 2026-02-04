@@ -133,7 +133,7 @@ class QuinielaPublicController extends Controller
                 "title" => "Pago Quiniela" . $jugador->nombre, 
                  "quantity" => 1, 
                  "currency_id" => "MXN",
-                "unit_price" => $total, 
+                "unit_price" => 10.00,
             ]
         ],
         "back_urls" => [
