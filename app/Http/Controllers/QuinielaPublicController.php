@@ -145,6 +145,8 @@ class QuinielaPublicController extends Controller
             "external_reference" => (string) $jugador->id,
         ]);
 
+        return view('quiniela.pagar', compact('jugador', 'preference'));
+
         
 
      return redirect()->away($preference->init_point);
