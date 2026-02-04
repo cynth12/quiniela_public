@@ -117,42 +117,48 @@ class QuinielaPublicController extends Controller
         }
     }
 
-    public function pagar($jugadorId) 
-    { 
-        $jugador = Jugador::with('quinielas')->findOrFail($jugadorId); 
-        $cantidad = $jugador->quinielas->count(); 
-        $total = $cantidad * 10;
+    public function pagar($jugadorId)
+{
+    $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
+    $cantidad = $jugador->quinielas->count();
+    $total = $cantidad * 10;
 
-    
-    MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
+    try {
+        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-    $client = new PreferenceClient();
-    $preference = $client->create([
-        
-        "items" => [ 
-            [ 
-                "title" => "Pago Quiniela" . $jugador->nombre, 
-                 "quantity" => 1, 
-                 "currency_id" => "MXN",
-                "unit_price" => 10.00,
-            ]
-        ],
-        "back_urls" => [
-            "success" => route('quiniela.exito'),
-            "failure" => route('quiniela.fallo'),
-            "pending" => route('quiniela.pendiente'),
+        $client = new PreferenceClient();
+        $preference = $client->create([
+            "items" => [
+                [
+                    "title" => "Pago Quiniela " . $jugador->nombre,
+                    "quantity" => 1,
+                    "currency_id" => "MXN",
+                    "unit_price" => $total,
+                ]
+            ],
+            "back_urls" => [
+                "success" => route('quiniela.exito'),
+                "failure" => route('quiniela.fallo'),
+                "pending" => route('quiniela.pendiente'),
             ],
             "auto_return" => "approved",
             "external_reference" => (string) $jugador->id,
         ]);
-        dd($preference);
 
+        // Opción A: mostrar vista con botón
         return view('quiniela.pagar', compact('jugador', 'preference'));
 
-        
+        // Opción B: redirigir directo al checkout
+        // return redirect()->away($preference->init_point);
 
-     return redirect()->away($preference->init_point);
+    } catch (MPApiException $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getApiResponse()
+        ], 500);
     }
+}
+
         
         public function webhook(Request $request) 
         
@@ -170,4 +176,5 @@ class QuinielaPublicController extends Controller
             return response()->json(['status' => 'ok']); 
         } 
     }
+
 
