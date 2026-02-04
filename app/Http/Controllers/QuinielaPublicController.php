@@ -128,6 +128,7 @@ class QuinielaPublicController extends Controller
 
     $client = new PreferenceClient();
     $preference = $client->create([
+        
         "items" => [ 
             [ 
                 "title" => "Pago Quiniela" . $jugador->nombre, 
@@ -144,6 +145,7 @@ class QuinielaPublicController extends Controller
             "auto_return" => "approved",
             "external_reference" => (string) $jugador->id,
         ]);
+        dd($preference);
 
         return view('quiniela.pagar', compact('jugador', 'preference'));
 
