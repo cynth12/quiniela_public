@@ -129,11 +129,12 @@ class QuinielaPublicController extends Controller
     $client = new PreferenceClient();
     $preference = $client->create([
         "items" => [ 
-            [ "title" => 
-        'Quinielas de ' . $jugador->nombre, 
-        "quantity" => 1, 
-        "unit_price" => $total, 
-        ]
+            [ 
+                "title" => "Pago Quiniela" . $jugador->nombre, 
+                 "quantity" => 1, 
+                 "currency_id" => "MXN",
+                "unit_price" => $total, 
+            ]
         ],
         "back_urls" => [
             "success" => route('quiniela.exito'),
