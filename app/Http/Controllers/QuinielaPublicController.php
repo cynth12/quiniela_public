@@ -148,15 +148,18 @@ class QuinielaPublicController extends Controller
 
             // Opción B: redirigir directo al checkout
             // return redirect()->away($preference->init_point);
-        } catch (MPApiException $e) {
-        Log::error('MercadoPago error', [
+        } 
+        
+     catch (\MercadoPago\Exceptions\MPApiException $e) {
+    Log::error('MercadoPago error', [
         'response' => $e->getApiResponse()
-        ]);
+    ]);
 
-        return response()->json([
-        'error' => 'Error con Mercado Pago, revisa logs'
-        ], 500);
-        }
+    return response()->json([
+        'error' => $e->getApiResponse()
+    ], 500);
+}
+
 
         }
 
