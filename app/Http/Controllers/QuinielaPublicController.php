@@ -12,7 +12,6 @@ use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Client\Payment\PaymentClient;
 
-
 class QuinielaPublicController extends Controller
 {
     // Mostrar jornada y partidos por número
@@ -36,8 +35,9 @@ class QuinielaPublicController extends Controller
         });
 
         $jugador = null;
-        if ($request->has('jugador_id')) 
-            { $jugador = Jugador::find($request->jugador_id); }
+        if ($request->has('jugador_id')) {
+            $jugador = Jugador::find($request->jugador_id);
+        }
 
         return view('quiniela.public', compact('jornada', 'partidos', 'jugador'));
     }
@@ -48,10 +48,13 @@ class QuinielaPublicController extends Controller
         $quinielas = $request->input('quinielas');
 
         if (!is_array($quinielas) || count($quinielas) === 0) {
-            return response()->json([
-                'success' => false,
-                'error' => 'No se recibieron quinielas válidas.'
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => 'No se recibieron quinielas válidas.',
+                ],
+                422,
+            );
         }
 
         try {
@@ -62,14 +65,7 @@ class QuinielaPublicController extends Controller
 
             foreach ($quinielas as $q) {
                 // Validación mínima
-                if (
-                    empty($q['nombre']) ||
-                    empty($q['telefono']) ||
-                    !isset($q['numero']) ||
-                    !isset($q['resultados']) ||
-                    !is_array($q['resultados']) ||
-                    count($q['resultados']) === 0
-                ) {
+                if (empty($q['nombre']) || empty($q['telefono']) || !isset($q['numero']) || !isset($q['resultados']) || !is_array($q['resultados']) || count($q['resultados']) === 0) {
                     throw new \Exception('Estructura de quiniela inválida.');
                 }
 
@@ -107,74 +103,91 @@ class QuinielaPublicController extends Controller
                 'cantidad' => $totalGuardadas,
                 'total' => $totalGuardadas * 10,
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
     public function pagar($jugadorId)
-{
-    $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
-    $cantidad = $jugador->quinielas->count();
-    $total = $cantidad * 10;
+    {
+        $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
+        $cantidad = $jugador->quinielas->count();
+        $total = $cantidad * 10;
 
-    try {
-        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
+        try {
+            MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-        $client = new PreferenceClient();
-        $preference = $client->create([
-            "items" => [
-                [
-                    "title" => "Pago Quiniela " . $jugador->nombre,
-                    "quantity" => 1,
-                    "currency_id" => "MXN",
-                    "unit_price" => $total,
-                ]
-            ],
-            "back_urls" => [
-                "success" => route('quiniela.exito'),
-                "failure" => route('quiniela.fallo'),
-                "pending" => route('quiniela.pendiente'),
-            ],
-            "auto_return" => "approved",
-            "external_reference" => (string) $jugador->id,
+            $client = new PreferenceClient();
+            $preference = $client->create([
+                'items' => [
+                    [
+                        'title' => 'Pago Quiniela ' . $jugador->nombre,
+                        'quantity' => 1,
+                        'currency_id' => 'MXN',
+                        'unit_price' => $total,
+                    ],
+                ],
+                'back_urls' => [
+                    'success' => route('quiniela.exito'),
+                    'failure' => route('quiniela.fallo'),
+                    'pending' => route('quiniela.pendiente'),
+                ],
+                'auto_return' => 'approved',
+                'external_reference' => (string) $jugador->id,
+            ]);
+
+            // Opción A: mostrar vista con botón
+            return view('quiniela.pagar', compact('jugador', 'preference'));
+
+            // Opción B: redirigir directo al checkout
+            // return redirect()->away($preference->init_point);
+        } catch (MPApiException $e) {
+        Log::error('MercadoPago error', [
+        'response' => $e->getApiResponse()
         ]);
 
-        // Opción A: mostrar vista con botón
-        return view('quiniela.pagar', compact('jugador', 'preference'));
-
-        // Opción B: redirigir directo al checkout
-        // return redirect()->away($preference->init_point);
-
-    } catch (MPApiException $e) {
         return response()->json([
-            'success' => false,
-            'error' => $e->getApiResponse()
+        'error' => 'Error con Mercado Pago, revisa logs'
         ], 500);
-    }
-}
+        }
 
-        
-        public function webhook(Request $request) 
-        
-        { $id = $request->input('data.id');
+        }
+
+    public function webhook(Request $request)
+    {
+        $id = $request->input('data.id');
         MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-            $client = new PaymentClient();
-            $payment = $client->get($id);
+        $client = new PaymentClient();
+        $payment = $client->get($id);
 
-            if ($payment && $payment->status === 'approved'){ 
-                $jugadorId = (int) $payment->external_reference;
-                Jugador::where('id', $jugadorId)->update(['pagada' => true]); 
-            } 
-            
-            return response()->json(['status' => 'ok']); 
-        } 
+        if ($payment && $payment->status === 'approved') {
+            $jugadorId = (int) $payment->external_reference;
+            Jugador::where('id', $jugadorId)->update(['pagada' => true]);
+        }
+
+        return response()->json(['status' => 'ok']);
     }
 
+    public function exito()
+    {
+        return view('quiniela.exito');
+    }
 
+    public function fallo()
+    {
+        return view('quiniela.fallo');
+    }
+
+    public function pendiente()
+    {
+        return view('quiniela.pendiente');
+    }
+}
