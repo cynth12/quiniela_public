@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="alert alert-success text-center">
-    ✅ ¡Tu quiniela no se guardo, revisa tu metodo de pago.
+    ✅ ¡Gracias por partcipar, tu pago esta pendiente!.
 </div>
 @endsection
