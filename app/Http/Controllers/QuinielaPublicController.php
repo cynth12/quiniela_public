@@ -152,15 +152,18 @@ class QuinielaPublicController extends Controller
             // return redirect()->away($preference->init_point);
         } 
         
-     catch (\MercadoPago\Exceptions\MPApiException $e) {
+      catch (\MercadoPago\Exceptions\MPApiException $e) {
+    $response = $e->getApiResponse();
     Log::error('MercadoPago error', [
-        'response' => $e->getApiResponse()
+        'status' => $response ? $response->getStatus() : null,
+        'body'   => $response ? $response->getContent() : null,
     ]);
 
     return response()->json([
-        'error' => $e->getApiResponse()
+        'error' => $response ? $response->getContent() : 'Sin detalle en la respuesta'
     ], 500);
 }
+
 
 
         }
