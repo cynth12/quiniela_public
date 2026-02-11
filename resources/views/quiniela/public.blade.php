@@ -42,18 +42,26 @@
                                     <th>V</th>
                                 </tr>
                             </thead>
+                            @php
+                                $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
+                            @endphp
+                            @if ($quinielasGuardadas)
+                                <div class="alert alert-info">
+                                    Ya guardaste tu quiniela. No puedes modificarla en esta sesión.
+                                </div>
+                            @endif
                             <tbody>
                                 @foreach ($partidos as $index => $partido)
                                     <tr>
                                         <td>{{ $partido['partido_numero'] ?? $index + 1 }}</td>
-                                        <td><input type="radio" name="resultados[{{ $index }}]"
-                                                value="L"></td>
+                                        <td><input type="radio" name="resultados[{{ $index }}]" value="L"
+                                                {{ $quinielasGuardadas ? 'disabled' : '' }}></td>
                                         <td>{{ $partido['local'] }}</td>
-                                        <td><input type="radio" name="resultados[{{ $index }}]"
-                                                value="E"></td>
+                                        <td><input type="radio" name="resultados[{{ $index }}]" value="E"
+                                                {{ $quinielasGuardadas ? 'disabled' : '' }}></td>
                                         <td>{{ $partido['visitante'] }}</td>
-                                        <td><input type="radio" name="resultados[{{ $index }}]"
-                                                value="V"></td>
+                                        <td><input type="radio" name="resultados[{{ $index }}]" value="V"
+                                                {{ $quinielasGuardadas ? 'disabled' : '' }}></td>
                                     </tr>
                                 @endforeach
                             </tbody>
