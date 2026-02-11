@@ -13,7 +13,6 @@ use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Client\Payment\PaymentClient;
 use Illuminate\Support\Facades\Log;
 
-
 class QuinielaPublicController extends Controller
 {
     // Mostrar jornada y partidos por número
@@ -145,29 +144,27 @@ class QuinielaPublicController extends Controller
                 'external_reference' => (string) $jugador->id,
             ]);
 
-            // Opción A: mostrar vista con botón
-            return view('quiniela.pagar', compact('jugador', 'preference'));
+            return view('quiniela.pagar', [
+                'jugador' => $jugador,
+                'preference' => $preference,
+                'quinielas' => $jugador->quinielas,
+            ]);
+            
+        } catch (\MercadoPago\Exceptions\MPApiException $e) {
+            $response = $e->getApiResponse();
 
-            // Opción B: redirigir directo al checkout
-            // return redirect()->away($preference->init_point);
-        } 
-        
-      catch (\MercadoPago\Exceptions\MPApiException $e) {
-    $response = $e->getApiResponse();
+            Log::error('MercadoPago error', [
+                'body' => $response ? $response->getContent() : 'Sin contenido en la respuesta',
+            ]);
 
-    Log::error('MercadoPago error', [
-        'body' => $response ? $response->getContent() : 'Sin contenido en la respuesta',
-    ]);
-
-    return response()->json([
-        'error' => $response ? $response->getContent() : 'Sin detalle en la respuesta'
-    ], 500);
-}
-
-
-
-
+            return response()->json(
+                [
+                    'error' => $response ? $response->getContent() : 'Sin detalle en la respuesta',
+                ],
+                500,
+            );
         }
+    }
 
     public function webhook(Request $request)
     {
