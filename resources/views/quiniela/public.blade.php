@@ -22,11 +22,15 @@
             $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
         @endphp
 
+       
+
         @if ($quinielasGuardadas)
             <div class="alert alert-info">
                 ✅ Ya guardaste tu quiniela. No puedes modificarla en esta sesión.
             </div>
         @endif
+
+        
 
 
         <div class="card shadow-sm">
@@ -83,7 +87,7 @@
                         <div class="row text-center mt-4">
                             <div class="col-md-4 mb-2">
                                 <button type="button" class="btn btn-primary w-100"
-                                    onclick="{{ $quinielasGuardadas ? 'Swal.fire(\'Paga primero tus quinielas guardadas\')' : 'agregarQuiniela()' }}">
+                                    onclick="agregarQuiniela()"{{ $quinielasGuardadas ? 'disabled' : '' }}>
                                     ➕ Agregar Quiniela
                                 </button>
 
