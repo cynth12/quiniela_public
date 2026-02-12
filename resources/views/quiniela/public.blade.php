@@ -82,11 +82,11 @@
 
                         <div class="row text-center mt-4">
                             <div class="col-md-4 mb-2">
-                                <button type="button"
-                                    onclick="{{ $quinielasGuardadas ? 'alert(\'Paga primero tus quinielas guardadas\')' : 'agregarQuiniela()' }}"
-                                    class="btn btn-primary w-100">
+                                <button type="button" class="btn btn-primary w-100"
+                                    onclick="{{ $quinielasGuardadas ? 'Swal.fire(\'Paga primero tus quinielas guardadas\')' : 'agregarQuiniela()' }}">
                                     ➕ Agregar Quiniela
                                 </button>
+
 
                             </div>
                             <div class="col-md-4 mb-2">
