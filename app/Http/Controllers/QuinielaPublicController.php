@@ -37,7 +37,7 @@ class QuinielaPublicController extends Controller
 
         $jugador = null;
         if ($request->has('jugador_id')) {
-            $jugador = Jugador::find($request->jugador_id);
+            $jugador = Jugador::with('quinielas')->find($request->jugador_id);
         }
 
         return view('quiniela.public', compact('jornada', 'partidos', 'jugador'));
@@ -149,7 +149,6 @@ class QuinielaPublicController extends Controller
                 'preference' => $preference,
                 'quinielas' => $jugador->quinielas,
             ]);
-            
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
             $response = $e->getApiResponse();
 

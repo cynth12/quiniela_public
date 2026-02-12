@@ -18,6 +18,16 @@
         <h2 class="jornada-info">📆 Jornada {{ $jornada['numero'] }} – {{ $jornada['fecha'] }} – 💰
             {{ $jornada['premio'] }}</h2>
 
+        @php
+            $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
+        @endphp
+
+        @if ($quinielasGuardadas)
+            <div class="alert alert-info">
+                ✅ Ya guardaste tu quiniela. No puedes modificarla en esta sesión.
+            </div>
+        @endif
+
 
         <div class="card shadow-sm">
             <div class="card">
@@ -42,14 +52,6 @@
                                     <th>V</th>
                                 </tr>
                             </thead>
-                            @php
-                                $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
-                            @endphp
-                            @if ($quinielasGuardadas)
-                                <div class="alert alert-info">
-                                    Ya guardaste tu quiniela. No puedes modificarla en esta sesión.
-                                </div>
-                            @endif
                             <tbody>
                                 @foreach ($partidos as $index => $partido)
                                     <tr>
@@ -80,7 +82,9 @@
 
                         <div class="row text-center mt-4">
                             <div class="col-md-4 mb-2">
-                                <button type="button" onclick="agregarQuiniela()" class="btn btn-primary w-100">➕
+                                <button type="button"
+                                    onclick="agregarQuiniela(){{ $quinielasGuardadas ? 'disabled' : '' }}"
+                                    class="btn btn-primary w-100">➕
                                     Agregar Quiniela</button>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -96,15 +100,15 @@
                     </form>
 
                     <div class="text-left mt-4" style="color: white;">
-                        <button type="button" class="btn btn-primary btn-lg w-100" onclick="guardarQuiniela()">
+                        <button type="button" class="btn btn-primary btn-lg w-100"
+                            onclick="guardarQuiniela()"{{ $quinielasGuardadas ? 'disabled' : '' }}>
                             💾 Guardar Quinielas
                         </button>
-                        @if (isset($jugador))
-                            <a href="{{ route('quiniela.pagar', $jugador->id) }}" class="btn btn-success">
+                        @if ($quinielasGuardadas && isset($jugador))
+                            <a href="{{ route('quiniela.pagar', $jugador->id) }}" class="btn btn-success w-100 mt-2">
                                 💳 Pagar con Mercado Pago
                             </a>
                         @endif
-
 
 
 
