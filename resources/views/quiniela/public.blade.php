@@ -83,9 +83,11 @@
                         <div class="row text-center mt-4">
                             <div class="col-md-4 mb-2">
                                 <button type="button"
-                                    onclick="agregarQuiniela(){{ $quinielasGuardadas ? 'disabled' : '' }}"
-                                    class="btn btn-primary w-100">➕
-                                    Agregar Quiniela</button>
+                                    onclick="{{ $quinielasGuardadas ? 'alert(\'Paga primero tus quinielas guardadas\')' : 'agregarQuiniela()' }}"
+                                    class="btn btn-primary w-100">
+                                    ➕ Agregar Quiniela
+                                </button>
+
                             </div>
                             <div class="col-md-4 mb-2">
                                 <button type="button" onclick="aleatorio()" class="btn btn-warning w-100">🎲
