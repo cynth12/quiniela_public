@@ -128,6 +128,7 @@ function guardarQuiniela() {
         if (data.success) {
             Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Procede a tu pago.', 'success');
             quinielasGuardadas = true; // 🔒 bloquear guardado document.getElementById('guardarBtn').disabled = true; // desactivar botón guardar
+            document.getElementById('agregarBtn').onclick = () => { Swal.fire('Ya guardaste tus quinielas', 'Procede al pago. No puedes agregar más.', 'info'); };
             const numero = quinielas[0]?.numero || 6; // usa el número de jornada de la primera quiniela
 
             quinielas = [];
