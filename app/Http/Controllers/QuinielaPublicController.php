@@ -118,7 +118,7 @@ class QuinielaPublicController extends Controller
 
     public function pagar($jugadorId)
     {
-        $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
+        $jugador = Jugador::with('quinielas.respuestas')->findOrFail($jugadorId);
         $cantidad = $jugador->quinielas->count();
         $total = $cantidad * 10;
 
@@ -147,6 +147,7 @@ class QuinielaPublicController extends Controller
             return view('quiniela.pagar', [
                 'jugador' => $jugador,
                 'preference' => $preference,
+                'total' => $total,
                 'quinielas' => $jugador->quinielas,
             ]);
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
