@@ -37,9 +37,10 @@ class PagoController extends Controller
         $preference = $client->create([
             "items" => [
                 [
-                    "title" => $titulo,
-                    "quantity" => $jugador->quinielas->count(),
-                    "unit_price" => 10,
+                        'title' => 'Pago Quiniela ' . $jugador->nombre,
+                        'quantity' => 1,
+                        'currency_id' => 'MXN',
+                        'unit_price' => $total,
                 ]
             ],
             "external_reference" => "ID:{$jugador->id}-Tel:{$jugador->telefono}",
