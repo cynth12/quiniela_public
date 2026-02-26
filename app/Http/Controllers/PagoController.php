@@ -44,7 +44,7 @@ class PagoController extends Controller
             'external_reference' => "ID:{$jugador->id}-Tel:{$jugador->telefono}",
             'back_urls' => [
                 'success' => route('pagos.success', ['jugadorId' => $jugador->id]),
-                'failure' => route('pagos.failure', ['jugadorId' => $jugador->id]), 
+                'failure' => route('pagos.failure', ['jugadorId' => $jugador->id]),
                 'pending' => route('pagos.pending', ['jugadorId' => $jugador->id]),
             ],
             'auto_return' => 'approved',
@@ -67,6 +67,11 @@ class PagoController extends Controller
             $jugadorId = $matches[1];
 
             $jugador = Jugador::findOrFail($jugadorId);
+
+            // 🔑 Actualizar estado del jugador
+            $jugador->pagada = 1;
+            $jugador->save();
+
             $quinielas = Quiniela::with('respuestas')->where('jugador_id', $jugadorId)->get();
             $monto = $quinielas->count() * 10;
 
