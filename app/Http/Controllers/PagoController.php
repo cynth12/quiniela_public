@@ -43,9 +43,9 @@ class PagoController extends Controller
             ],
             'external_reference' => "ID:{$jugador->id}-Tel:{$jugador->telefono}",
             'back_urls' => [
-                'success' => route('pagos.success'),
-                'failure' => route('pagos.failure'),
-                'pending' => route('pagos.pending'),
+                'success' => route('pagos.success', ['jugadorId' => $jugador->id]),
+                'failure' => route('pagos.failure', ['jugadorId' => $jugador->id]), 
+                'pending' => route('pagos.pending', ['jugadorId' => $jugador->id]),
             ],
             'auto_return' => 'approved',
         ]);
@@ -124,18 +124,30 @@ class PagoController extends Controller
         return redirect()->route('pagos.index')->with('success', 'Pago y comprobante eliminados correctamente.');
     }
 
-    public function success()
+    public function success(Request $request)
     {
-        return view('pagos.success')->with('mensaje', '¡Pago aprobado! Gracias por participar.');
+        $jugadorId = $request->query('jugadorId');
+        $pago = Pago::where('jugador_id', $jugadorId)->latest()->first();
+        $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
+
+        return view('pagos.success', compact('pago', 'quinielas'));
     }
 
-    public function failure()
+    public function failure(Request $request)
     {
-        return view('pagos.failure')->with('mensaje', 'El pago fue rechazado o cancelado.');
+        $jugadorId = $request->query('jugadorId');
+        $jugador = Jugador::find($jugadorId);
+        $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
+
+        return view('pagos.failure', compact('jugador', 'quinielas'));
     }
 
-    public function pending()
+    public function pending(Request $request)
     {
-        return view('pagos.pending')->with('mensaje', 'Tu pago está pendiente de confirmación.');
+        $jugadorId = $request->query('jugadorId');
+        $jugador = Jugador::find($jugadorId);
+        $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
+
+        return view('pagos.pending', compact('jugador', 'quinielas'));
     }
 }
