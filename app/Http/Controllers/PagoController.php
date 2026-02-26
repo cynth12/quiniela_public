@@ -30,26 +30,24 @@ class PagoController extends Controller
 
         $client = new PreferenceClient();
         $ultimaQuiniela = $jugador->quinielas->last();
-        $titulo = $ultimaQuiniela
-            ? "Quinielas Jornada {$ultimaQuiniela->numero}"
-            : "Quinielas";
+        $titulo = $ultimaQuiniela ? "Quinielas Jornada {$ultimaQuiniela->numero}" : 'Quinielas';
 
         $preference = $client->create([
-            "items" => [
+            'items' => [
                 [
-                        'title' => 'Pago Quiniela ' . $jugador->nombre,
-                        'quantity' => 1,
-                        'currency_id' => 'MXN',
-                        'unit_price' => $total,
-                ]
+                    'title' => 'Pago Quiniela ' . $jugador->nombre,
+                    'quantity' => 1,
+                    'currency_id' => 'MXN',
+                    'unit_price' => $total,
+                ],
             ],
-            "external_reference" => "ID:{$jugador->id}-Tel:{$jugador->telefono}",
-            "back_urls" => [
-                "success" => route('pagos.success'),
-                "failure" => route('pagos.failure'),
-                "pending" => route('pagos.pending'),
+            'external_reference' => "ID:{$jugador->id}-Tel:{$jugador->telefono}",
+            'back_urls' => [
+                'success' => route('pagos.success'),
+                'failure' => route('pagos.failure'),
+                'pending' => route('pagos.pending'),
             ],
-            "auto_return" => "approved",
+            'auto_return' => 'approved',
         ]);
 
         return redirect()->away($preference->init_point);
@@ -57,7 +55,7 @@ class PagoController extends Controller
 
     // Webhook de Mercado Pago (confirmación automática)
     public function webhook(Request $request)
-   {
+    {
         MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
         $paymentId = $request->input('data.id');
@@ -79,6 +77,12 @@ class PagoController extends Controller
                 'fecha_pago' => now(),
             ]);
 
+            // 🔑 Actualizar estado de las quinielas
+            foreach ($quinielas as $quiniela) {
+                $quiniela->estado = 'pagada';
+                $quiniela->save();
+            }
+
             $pdf = Pdf::loadView('pdf.comprobante', compact('quinielas', 'pago'));
             $filename = 'comprobante_pago_' . $pago->id . '.pdf';
             $pdf->save(storage_path('app/public/' . $filename));
@@ -90,23 +94,19 @@ class PagoController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
-
     public function enviarComprobanteWhatsapp($jugador, $pago)
-       {
+    {
         $pdfUrl = asset('storage/' . $pago->comprobante_pdf);
 
-        Http::withToken(env('WHATSAPP_TOKEN'))->post(
-            'https://graph.facebook.com/v17.0/' . env('WHATSAPP_PHONE_ID') . '/messages',
-            [
-                'messaging_product' => 'whatsapp',
-                'to' => $jugador->telefono,
-                'type' => 'document',
-                'document' => [
-                    'link' => $pdfUrl,
-                    'caption' => "Comprobante de pago - Jugador ID: {$jugador->id}",
-                ],
-            ]
-        );
+        Http::withToken(env('WHATSAPP_TOKEN'))->post('https://graph.facebook.com/v17.0/' . env('WHATSAPP_PHONE_ID') . '/messages', [
+            'messaging_product' => 'whatsapp',
+            'to' => $jugador->telefono,
+            'type' => 'document',
+            'document' => [
+                'link' => $pdfUrl,
+                'caption' => "Comprobante de pago - Jugador ID: {$jugador->id}",
+            ],
+        ]);
     }
 
     public function destroy($id)
@@ -126,17 +126,16 @@ class PagoController extends Controller
 
     public function success()
     {
-    return view('pagos.success')->with('mensaje', '¡Pago aprobado! Gracias por participar.');
+        return view('pagos.success')->with('mensaje', '¡Pago aprobado! Gracias por participar.');
     }
 
     public function failure()
     {
-    return view('pagos.failure')->with('mensaje', 'El pago fue rechazado o cancelado.');
+        return view('pagos.failure')->with('mensaje', 'El pago fue rechazado o cancelado.');
     }
 
     public function pending()
     {
-    return view('pagos.pending')->with('mensaje', 'Tu pago está pendiente de confirmación.');
+        return view('pagos.pending')->with('mensaje', 'Tu pago está pendiente de confirmación.');
     }
-
 }
