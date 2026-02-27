@@ -138,7 +138,7 @@ function guardarQuiniela() {
             resumen.innerHTML = `
             <p><strong>Total de quinielas:</strong> ${data.cantidad}</p>
             <p><strong>Total a pagar:</strong> $${data.total} MXN</p>
-            <a href="/quiniela/pagar/${data.jugador_id}" class="btn btn-lg btn-success w-100 mt-3" style="font-size: 1.2rem; padding: 12px;">
+            <a href="/pagos/pagar/${data.jugador_id}" class="btn btn-lg btn-success w-100 mt-3" style="font-size: 1.2rem; padding: 12px;">
                     💳 Pagar con Mercado Pago
                 </a>
             `;
