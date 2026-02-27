@@ -34,11 +34,8 @@ Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');
 Route::post('/public/quiniela', [QuinielaPublicController::class, 'store'])->name('quiniela.store');
-Route::get('/quiniela/pagar/{jugador}', [QuinielaPublicController::class, 'pagar'])->name('quiniela.pagar');
-Route::get('/quiniela/exito', [QuinielaPublicController::class, 'exito'])->name('quiniela.exito');
-Route::get('/quiniela/fallo', [QuinielaPublicController::class, 'fallo'])->name('quiniela.fallo');
-Route::get('/quiniela/pendiente', [QuinielaPublicController::class, 'pendiente'])->name('quiniela.pendiente');
-Route::post('/webhook/mp', [QuinielaPublicController::class, 'webhook'])->name('mp.webhook');
+
+
 
 use App\Http\Controllers\ResultadoController;
 Route::get('/resultados', [ResultadoController::class, 'index'])->name('resultados.index');
@@ -53,15 +50,14 @@ Route::get('/quinielas/jugador/{id}', [QuinielaController::class, 'verPorJugador
 
 use App\Http\Controllers\PagoController;
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
-Route::get('/pago/{jugadorId}', [PagoController::class, 'generarPago'])->name('pagos.generar');
 Route::delete('/pagos/{id}', [PagoController::class, 'destroy'])->name('pagos.destroy');
+Route::get('/pagos/success', [PagoController::class, 'success'])->name('pagos.success'); 
+Route::get('/pagos/failure', [PagoController::class, 'failure'])->name('pagos.failure'); 
+Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pending'); 
+Route::get('/pagos/pagar/{jugador}', [PagoPublicController::class, 'pagar'])->name('pagos.pagar');
 
 // Rutas de retorno de Mercado Pago 
-Route::get('/pagos/success', [PagoController::class, 'success'])->name('pagos.success'); Route::get('/pagos/failure', [PagoController::class, 'failure'])->name('pagos.failure'); 
-Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pending'); 
+Route::post('/webhook/mp', [PagoPublicController::class, 'webhook'])->name('mp.webhook');
 
 
 
-// Webhook para confirmación automática 
-
-Route::post('/pagos/webhook', [PagoController::class, 'webhook'])->name('pagos.webhook');

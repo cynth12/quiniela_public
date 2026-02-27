@@ -1,7 +1,0 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="alert alert-success text-center">
-    ✅ ¡Tu quiniela no se guardo, revisa tu metodo de pago.
-</div>
-@endsection

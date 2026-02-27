@@ -26,6 +26,8 @@ class PagoController extends Controller
     {
         $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
 
+        $total = $jugador->quinielas->count() * 10;
+
         MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
         $client = new PreferenceClient();
