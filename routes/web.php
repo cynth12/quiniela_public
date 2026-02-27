@@ -54,10 +54,10 @@ Route::delete('/pagos/{id}', [PagoController::class, 'destroy'])->name('pagos.de
 Route::get('/pagos/success', [PagoController::class, 'success'])->name('pagos.success'); 
 Route::get('/pagos/failure', [PagoController::class, 'failure'])->name('pagos.failure'); 
 Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pending'); 
-Route::get('/pagos/pagar/{jugador}', [PagoPublicController::class, 'pagar'])->name('pagos.pagar');
+Route::get('/pagos/pagar/{jugador}', [PagoController::class, 'pagar'])->name('pagos.pagar');
 
 // Rutas de retorno de Mercado Pago 
-Route::post('/webhook/mp', [PagoPublicController::class, 'webhook'])->name('mp.webhook');
+Route::post('/webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');
 
 
 
