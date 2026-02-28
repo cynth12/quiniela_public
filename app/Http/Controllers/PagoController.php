@@ -69,28 +69,25 @@ class PagoController extends Controller
             $jugadorId = $matches[1];
 
             $jugador = Jugador::findOrFail($jugadorId);
-
-            // 🔑 Actualizar estado del jugador
             $jugador->pagada = 1;
             $jugador->save();
 
-            $quinielas = Quiniela::with('respuestas')->where('jugador_id', $jugadorId)->get();
+            $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
             $monto = $quinielas->count() * 10;
 
             $pago = Pago::create([
                 'jugador_id' => $jugador->id,
-                'numero' => optional($quinielas->last())->numero,
+                'numero' => optional($quinielas->last())->numero ?? 0,
                 'monto' => $monto,
                 'fecha_pago' => now(),
             ]);
 
-            // 🔑 Actualizar estado de las quinielas
-            foreach ($quinielas as $quiniela) {
-                $quiniela->estado = 'pagada';
-                $quiniela->save();
-            }
+            $pdf = Pdf::loadView('pdf.comprobante', [ 
+                'jugador' => $jugador, 
+                'quinielas' => $quinielas, 
+                'pago' => $pago,
 
-            $pdf = Pdf::loadView('pdf.comprobante', compact('quinielas', 'pago'));
+            ]);
             $filename = 'comprobante_pago_' . $pago->id . '.pdf';
             $pdf->save(storage_path('app/public/' . $filename));
             $pago->update(['comprobante_pdf' => $filename]);
@@ -133,11 +130,13 @@ class PagoController extends Controller
 
     public function success(Request $request)
     {
-        $jugadorId = $request->query('jugadorId');
-        $pago = Pago::where('jugador_id', $jugadorId)->latest()->first();
-        $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
+        $jugadorId = $request->jugadorId;
+        $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
 
-        return view('pagos.success', compact('pago', 'quinielas'));
+        // Buscar el último pago del jugador
+        $pago = Pago::where('jugador_id', $jugadorId)->latest()->first();
+
+        return view('pagos.success', compact('jugador', 'pago'));
     }
 
     public function failure(Request $request)
