@@ -22,7 +22,7 @@ class PagoController extends Controller
     }
 
     // Generar preferencia de pago en Mercado Pago
-    public function generarPago($jugadorId)
+    public function pagar($jugadorId)
     {
         $jugador = Jugador::with('quinielas')->findOrFail($jugadorId);
 
