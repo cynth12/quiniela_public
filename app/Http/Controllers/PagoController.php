@@ -136,7 +136,7 @@ class PagoController extends Controller
         // Buscar el último pago del jugador
         $pago = Pago::where('jugador_id', $jugadorId)->latest()->first();
 
-        return view('pagos.success', compact('jugador', 'pago'));
+        return view('pagos.success', compact('jugador', 'pago', 'quinielas'));
     }
 
     public function failure(Request $request)
