@@ -58,6 +58,8 @@ class PagoController extends Controller
     // Webhook de Mercado Pago (confirmación automática)
     public function webhook(Request $request)
     {
+        \Log::info('Webhook recibido:', $request->all());
+        
         MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
         $paymentId = $request->input('data.id');
