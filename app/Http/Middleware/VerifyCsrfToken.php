@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
     'webhook/mp',
     '/webhook/mp',
      'https://quinielazas.com/webhook/mp',
+     'public/webhook/mp',
 ];
     protected function tokensMatch($request)
     {
