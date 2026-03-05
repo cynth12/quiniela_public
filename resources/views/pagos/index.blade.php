@@ -36,6 +36,7 @@
                         <td>{{ $pago->numero }}</td>
                         <td>${{ number_format($pago->monto, 2) }}</td>
                         <td>{{ $pago->fecha_pago }}</td>
+                        <td>{{ $pago->estado }}</td>
                         <td>
                             @if ($pago->comprobante_pdf)
                                 <a href="{{ asset('storage/' . $pago->comprobante_pdf) }}" target="_blank"
