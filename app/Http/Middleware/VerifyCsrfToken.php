@@ -12,19 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-    'webhook/mp',
+    
     
 ];
-    protected function tokensMatch($request)
-    {
-        \Log::info('VerifyCsrfToken ejecutado, except: ', $this->except);
-        return parent::tokensMatch($request);
-    }
-
-    public function handle($request, \Closure $next)
-{
-    \Log::info('CSRF middleware ejecutado', ['uri' => $request->path()]);
-    return parent::handle($request, $next);
-}
-
+    
 }

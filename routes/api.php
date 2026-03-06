@@ -6,4 +6,4 @@ use App\Http\Controllers\PagoController;
 
 
 
-//Route::post('pagos/webhook', [PagoController::class, 'webhook'])->name('pagos.webhook');
+Route::post('webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');

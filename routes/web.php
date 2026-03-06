@@ -57,7 +57,8 @@ Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pe
 Route::get('/pagos/pagar/{jugador}', [PagoController::class, 'pagar'])->name('pagos.pagar');
 Route::get('/pago/{jugadorId}', [PagoController::class, 'generarPago'])->name('pagos.generar');
 // Rutas de retorno de Mercado Pago 
-Route::post('webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');
+//Route::post('webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');
+
 
 
 
