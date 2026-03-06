@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        parent::boot();
+
+        // Aquí llamamos a las rutas de API
+        $this->mapApiRoutes();
     }
 }
