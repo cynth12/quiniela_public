@@ -13,9 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
     'webhook/mp',
-    '/webhook/mp',
-     'https://quinielazas.com/webhook/mp',
-     'public/webhook/mp',
+    
 ];
     protected function tokensMatch($request)
     {
