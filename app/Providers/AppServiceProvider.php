@@ -11,19 +11,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void {}
 
-    protected function mapApiRoutes()
-    {
-        Route::prefix('api')->middleware('api')->group(base_path('routes/api.php'));
-    }
+    
 
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
-        parent::boot();
-
-        // Aquí llamamos a las rutas de API
-        $this->mapApiRoutes();
+       
     }
 }
