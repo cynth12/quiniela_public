@@ -9,9 +9,11 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
-    public function register(): void
+    public function register(): void {}
+
+    protected function mapApiRoutes()
     {
-       
+        Route::prefix('api')->middleware('api')->group(base_path('routes/api.php'));
     }
 
     /**
