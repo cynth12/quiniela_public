@@ -57,56 +57,59 @@ class PagoController extends Controller
 
     // Webhook de Mercado Pago (confirmación automática)
     public function webhook(Request $request)
-{
-    \Log::info('Webhook recibido:', $request->all());
-    
-    MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
+    {
+        \Log::info('Webhook recibido:', $request->all());
 
-    $paymentId = $request->input('data.id');
-    $client = new PaymentClient();
-    $payment = $client->get($paymentId);
+        MercadoPagoConfig::setAccessToken(env('MERCADOPAGO_TOKEN'));
 
-    if ($payment && $payment->status === 'approved') {
-        preg_match('/ID:(\d+)-Tel:(\d+)/', $payment->external_reference, $matches);
-        $jugadorId = $matches[1];
+        $paymentId = $request->input('data.id');
+        $client = new PaymentClient();
+        $payment = $client->get($paymentId);
 
-        $jugador = Jugador::findOrFail($jugadorId);
-        $jugador->pagada = 1;
-        $jugador->save();
+        \Log::info('Webhook payload:', $request->all());
+        \Log::info('Payment status:', [$payment->status]);
+        \Log::info('External reference:', [$payment->external_reference]);
 
-        // Actualizar quinielas
-        Quiniela::where('jugador_id', $jugadorId)
-            ->update(['estado' => 'pagada']);
+        if ($payment && $payment->status === 'approved') {
+            preg_match('/ID:(\d+)-Tel:(\d+)/', $payment->external_reference, $matches);
+            $jugadorId = $matches[1];
 
-        $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
-        $monto = $quinielas->count() * 10;
+            $jugador = Jugador::findOrFail($jugadorId);
+            $jugador->pagada = 1;
+            $jugador->save();
 
-        // 👇 Aquí el cambio importante: actualizar el pago pendiente en lugar de crear uno nuevo
-        $pago = Pago::updateOrCreate(
-            ['jugador_id' => $jugador->id, 'numero' => optional($quinielas->last())->numero ?? 0],
-            [
-                'monto' => $monto,
-                'fecha_pago' => now(),
-                'estado' => 'pagado',
-            ]
-        );
+            // Actualizar quinielas
+            Quiniela::where('jugador_id', $jugadorId)->update(['estado' => 'pagada']);
 
-        // Generar PDF
-        $pdf = Pdf::loadView('pdf.comprobante', [ 
-            'jugador' => $jugador, 
-            'quinielas' => $quinielas, 
-            'pago' => $pago,
-        ]);
-        $filename = 'comprobante_pago_' . $pago->id . '.pdf';
-        $pdf->save(storage_path('app/public/' . $filename));
-        $pago->update(['comprobante_pdf' => $filename]);
+            $quinielas = Quiniela::where('jugador_id', $jugadorId)->get();
+            $monto = $quinielas->count() * 10;
 
-        // Enviar por WhatsApp
-        $this->enviarComprobanteWhatsapp($jugador, $pago);
+            // 👇 Aquí el cambio importante: actualizar el pago pendiente en lugar de crear uno nuevo
+            $pago = Pago::updateOrCreate(
+                ['jugador_id' => $jugador->id, 'numero' => optional($quinielas->last())->numero ?? 0],
+                [
+                    'monto' => $monto,
+                    'fecha_pago' => now(),
+                    'estado' => 'pagado',
+                ],
+            );
+
+            // Generar PDF
+            $pdf = Pdf::loadView('pdf.comprobante', [
+                'jugador' => $jugador,
+                'quinielas' => $quinielas,
+                'pago' => $pago,
+            ]);
+            $filename = 'comprobante_pago_' . $pago->id . '.pdf';
+            $pdf->save(storage_path('app/public/' . $filename));
+            $pago->update(['comprobante_pdf' => $filename]);
+
+            // Enviar por WhatsApp
+            $this->enviarComprobanteWhatsapp($jugador, $pago);
+        }
+
+        return response()->json(['status' => 'ok']);
     }
-
-    return response()->json(['status' => 'ok']);
-}
 
     public function enviarComprobanteWhatsapp($jugador, $pago)
     {
@@ -146,10 +149,8 @@ class PagoController extends Controller
         // Buscar el último pago del jugador
         $pago = Pago::where('jugador_id', $jugadorId)->latest()->first();
 
-
         $quinielas = $jugador->quinielas;
         return view('pagos.success', compact('jugador', 'pago', 'quinielas'));
-
     }
 
     public function failure(Request $request)
