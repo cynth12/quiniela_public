@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pago;
 use App\Models\Jornada;
 use App\Models\Jugador;
 use App\Models\Quiniela;
@@ -81,6 +82,7 @@ class QuinielaPublicController extends Controller
                     'jugador_id' => $jugador->id,
                     'numero' => $q['numero'], // jornada
                     'numero_quiniela' => uniqid(),
+                    'estado' => 'pendiente', // 👈 nueva columna
                 ]);
 
                 // Guardar respuestas
@@ -91,6 +93,15 @@ class QuinielaPublicController extends Controller
                         'respuesta' => $respuesta,
                     ]);
                 }
+
+                // Crear registro de pago pendiente (10 por quiniela)
+                Pago::create([
+                    'jugador_id' => $jugador->id,
+                    'numero' => $q['numero'],
+                    'monto' => 10, // 👈 ajusta según tu lógica
+                    'fecha_pago' => now(),
+                    'estado' => 'pendiente',
+                ]);
 
                 $totalGuardadas++;
             }
