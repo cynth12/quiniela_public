@@ -119,11 +119,12 @@ function guardarQuiniela() {
             mensaje += "Quinielas registradas:\n";
             quinielas.forEach((q, index) => {
                 mensaje += "Quiniela " + (index + 1) + ": " + q.resultados.join(' – ') + "\n";
-            });
+                });
+            
             mensaje += "\nPor favor envía tu comprobante de pago aquí.";
 
             // Tu número de WhatsApp
-            let numeroDestino = "521XXXXXXXXXX"; // cámbialo por tu número real
+            let numeroDestino = "529843833329"; // cámbialo por tu número real
             let url = "https://wa.me/" + numeroDestino + "?text=" + encodeURIComponent(mensaje);
 
             window.open(url, "_blank");

@@ -45,7 +45,7 @@ class QuinielaPublicController extends Controller
     }
 
     // Guardar quinielas públicas (JSON desde fetch)
-    public function store(Request $request)
+  public function store(Request $request)
 {
     $quinielas = $request->input('quinielas');
 
@@ -61,6 +61,7 @@ class QuinielaPublicController extends Controller
 
         $jugador = null;
         $totalGuardadas = 0;
+        $jornadaNumero = null;
 
         foreach ($quinielas as $q) {
             if (empty($q['nombre']) || empty($q['telefono']) || !isset($q['numero']) || !isset($q['resultados'])) {
@@ -87,16 +88,24 @@ class QuinielaPublicController extends Controller
                 ]);
             }
 
-            Pago::create([
+            $totalGuardadas++;
+            $jornadaNumero = $q['numero']; // guardamos la jornada
+        }
+
+        // 👉 Crear un solo pago acumulado
+        $montoTotal = $totalGuardadas * 10; // cada quiniela cuesta $10
+
+        Pago::updateOrCreate(
+            [
                 'jugador_id' => $jugador->id,
-                'numero' => $q['numero'],
-                'monto' => 10,
+                'numero' => $jornadaNumero,
+            ],
+            [
+                'monto' => $montoTotal,
                 'fecha_pago' => now(),
                 'estado' => 'pendiente',
-            ]);
-
-            $totalGuardadas++;
-        }
+            ]
+        );
 
         DB::commit();
 
@@ -104,7 +113,7 @@ class QuinielaPublicController extends Controller
             'success' => true,
             'jugador_id' => $jugador->id,
             'cantidad' => $totalGuardadas,
-            'total' => $totalGuardadas * 10,
+            'total' => $montoTotal,
         ]);
     } catch (\Exception $e) {
         DB::rollBack();

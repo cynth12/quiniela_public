@@ -1,41 +1,52 @@
-@extends('adminlte::page')
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comprobante de Pago</title>
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; }
+        .container { text-align: center; margin-top: 30px; }
+        .titulo { font-size: 22px; font-weight: bold; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="titulo">🏆 Comprobante de Pago</div>
+        <p><strong>Jugador:</strong> {{ $jugador->nombre }}</p>
+        <p><strong>Teléfono:</strong> {{ $jugador->telefono }}</p>
 
-@section('title', 'Resultados de la jornada')
+        @if($jugador->quinielas->count() > 0)
+            <p><strong>Jornada:</strong> {{ $jugador->quinielas->first()->numero }}</p>
+        @endif
 
-@section('content')
-    <h1>🏆 Resultados – Jornada {{ $jornada->numero }}</h1>
-    <p>📅 {{ $jornada->fecha }} – 💰 Premio: {{ $jornada->premio }}</p>
-
-    {{-- Tabla de partidos con resultados oficiales --}}
-    <table class="table text-center mb-4">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Local</th>
-                <th>Visitante</th>
-                <th>Resultado oficial</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($jornada->partidos as $partido)
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $partido->partido_numero }}</td>
-                    <td>{{ $partido->local }}</td>
-                    <td>{{ $partido->visitante }}</td>
-                    @php
-                        $resultado = strtolower($partido->resultado->resultado_oficial ?? '');
-                        $simbolo = match ($resultado) {
-                            'l' => '🏠 Local',
-                            'v' => '✈️ Visitante',
-                            'e' => '⚖️ Empate',
-                            default => '❌ Sin resultado',
-                        };
-                    @endphp
-                    <td>{{ $simbolo }}</td>
+                    <th>Monto</th>
+                    <th>Fecha de Pago</th>
+                    <th>Estado</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @php
+                    $pago = \App\Models\Pago::where('jugador_id', $jugador->id)
+                        ->where('numero', $jugador->quinielas->first()->numero ?? null)
+                        ->first();
+                @endphp
+                @if($pago)
+                    <tr>
+                        <td>${{ number_format($pago->monto, 2) }}</td>
+                        <td>{{ $pago->fecha_pago }}</td>
+                        <td>{{ ucfirst($pago->estado) }}</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
 
-    <p class="text-info">ℹ️ Estos son los resultados oficiales registrados para la jornada.</p>
-@stop
+        <p style="margin-top: 30px;">✔️ Este comprobante certifica que el jugador ha realizado su pago.</p>
+    </div>
+</body>
+</html>
+

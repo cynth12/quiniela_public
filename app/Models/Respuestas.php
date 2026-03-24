@@ -18,4 +18,7 @@ class Respuestas extends Model
     {
         return $this->belongsTo(Quiniela::class);
     }
+
+    
 }
+

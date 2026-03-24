@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Jugador;
 use App\Models\Respuestas;
 use Illuminate\Http\Request;
+use App\Models\Quiniela;
+use App\Models\Pago;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class JugadorController extends Controller
 {
@@ -15,7 +18,7 @@ class JugadorController extends Controller
     public function index()
     {
         $jugadores = Jugador::with('quinielas')->get();
-    return view('jugadores.index', compact('jugadores'));
+        return view('jugadores.index', compact('jugadores'));
     }
 
     /**
@@ -55,12 +58,59 @@ class JugadorController extends Controller
         //
     }
 
+public function marcarPagado($id)
+{
+    try {
+        $jugador = Jugador::with('quinielas')->findOrFail($id);
+
+        // Cambiar estado del jugador
+        $jugador->pagada = 1;
+        $jugador->save();
+
+        // Tomar la quiniela del jugador
+        $quiniela = $jugador->quinielas->first();
+
+        if ($quiniela) {
+            // Buscar el pago que coincide con jugador_id y numero de la quiniela
+            $pago = Pago::where('jugador_id', $jugador->id)
+                        ->where('numero', $quiniela->numero)
+                        ->first();
+
+            if ($pago) {
+                // Generar PDF
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago'));
+                $pdfPath = "comprobantes/comprobante_{$jugador->id}_{$quiniela->numero}.pdf";
+                $pdf->save(storage_path("app/public/{$pdfPath}"));
+
+                // Actualizar pago
+                $pago->update([
+                    'estado' => 'pagado',
+                    'comprobante_pdf' => $pdfPath
+                ]);
+            }
+        }
+
+        return redirect()->route('jugadores.index')
+            ->with('success', '✅ Jugador marcado como pagado y comprobante generado.');
+    } catch (\Exception $e) {
+        return redirect()->route('jugadores.index')
+            ->with('error', '❌ Error al marcar como pagado: '.$e->getMessage());
+    }
+}
+
+
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Jugador $jugador)
     {
-        foreach ($jugador->quinielas as $q) { $q->respuestas()->delete(); $q->delete(); } $jugador->delete(); 
-        return redirect()->route('quiniela.index')->with('success', 'Jugador y sus quinielas eliminados correctamente.');
+        foreach ($jugador->quinielas as $q) {
+            $q->respuestas()->delete();
+            $q->delete();
+        }
+        $jugador->delete();
+
+        return redirect()->route('jugadores.index')->with('success', 'Jugador y sus quinielas eliminados correctamente.');
     }
 }

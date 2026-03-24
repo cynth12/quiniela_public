@@ -11,6 +11,7 @@ class Pago extends Model
         'numero',
         'monto',
         'fecha_pago',
+        'estado',
         'comprobante_pdf',
     ];
 

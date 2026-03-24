@@ -107,18 +107,11 @@
                     </form>
 
                     <div class="text-left mt-4" style="color: white;">
-                        <button type="button" class="btn btn-primary btn-lg w-100" onclick="enviarPorWhatsApp()"
-                            {{ $quinielasGuardadas ? 'disabled' : '' }}>
-                            📲 Enviar por WhatsApp
+                        <button type="button" class="btn btn-primary btn-lg w-100"
+                        onclick="guardarQuiniela()">
+                        📲 Enviar por WhatsApp
                         </button>
-                        <!--@if ($quinielasGuardadas && isset($jugador))
-                            <a href="{{ route('pagos.pagar', $jugador->id) }}" class="btn btn-success w-100 mt-2">
-                                💳 Pagar con Mercado Pago
-                            </a>
-                        @endif-->
-
-
-
+                
                         <!--<button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
                             💳 Pagar con Mercado Pago
                         </button>-->

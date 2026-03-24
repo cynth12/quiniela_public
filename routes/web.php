@@ -18,6 +18,10 @@ use App\Http\Controllers\JugadorController;
 Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.index');
 Route::get('/jugadores/create', [JugadorController::class, 'create'])->name('jugadores.create');
 Route::post('/jugadores', [JugadorController::class, 'store'])->name('jugadores.store');
+// Marcar jugador como pagado
+Route::post('/jugadores/{id}/pagado', [JugadorController::class, 'marcarPagado'])->name('jugadores.marcarPagado');
+
+// Eliminar jugador
 Route::delete('/jugadores/{jugador}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
 
 use App\Http\Controllers\JornadaController;
@@ -56,6 +60,13 @@ Route::get('/pagos/failure', [PagoController::class, 'failure'])->name('pagos.fa
 Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pending'); 
 Route::get('/pagos/pagar/{jugador}', [PagoController::class, 'pagar'])->name('pagos.pagar');
 Route::get('/pago/{jugadorId}', [PagoController::class, 'generarPago'])->name('pagos.generar');
+Route::post('/pagos/{id}/comprobante', [PagoController::class, 'generarComprobante'])->name('pagos.generarComprobante');
+Route::post('/pagos/{id}/marcar-pagado', [PagoController::class, 'marcarPagado'])
+    ->name('pagos.marcarPagado');
+
+   
+
+
 // Rutas de retorno de Mercado Pago 
 //Route::post('webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');
 
