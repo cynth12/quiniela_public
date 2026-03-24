@@ -46,86 +46,75 @@ class QuinielaPublicController extends Controller
 
     // Guardar quinielas públicas (JSON desde fetch)
     public function store(Request $request)
-    {
-        $quinielas = $request->input('quinielas');
+{
+    $quinielas = $request->input('quinielas');
 
-        if (!is_array($quinielas) || count($quinielas) === 0) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => 'No se recibieron quinielas válidas.',
-                ],
-                422,
-            );
-        }
+    if (!is_array($quinielas) || count($quinielas) === 0) {
+        return response()->json([
+            'success' => false,
+            'error' => 'No se recibieron quinielas válidas.',
+        ], 422);
+    }
 
-        try {
-            DB::beginTransaction();
+    try {
+        DB::beginTransaction();
 
-            $jugador = null;
-            $totalGuardadas = 0;
+        $jugador = null;
+        $totalGuardadas = 0;
 
-            foreach ($quinielas as $q) {
-                // Validación mínima
-                if (empty($q['nombre']) || empty($q['telefono']) || !isset($q['numero']) || !isset($q['resultados']) || !is_array($q['resultados']) || count($q['resultados']) === 0) {
-                    throw new \Exception('Estructura de quiniela inválida.');
-                }
-
-                // Crear o recuperar jugador (pagada está en jugadores, no en quinielas)
-                $jugador = Jugador::firstOrCreate([
-                    'nombre' => $q['nombre'],
-                    'telefono' => $q['telefono'],
-                ]);
-
-                // Crear quiniela asociada (sin 'pagada', porque no existe en esta tabla)
-                $quiniela = Quiniela::create([
-                    'jugador_id' => $jugador->id,
-                    'numero' => $q['numero'], // jornada
-                    'numero_quiniela' => uniqid(),
-                    'estado' => 'pendiente', // 👈 nueva columna
-                ]);
-
-                // Guardar respuestas
-                foreach ($q['resultados'] as $partido_numero => $respuesta) {
-                    Respuestas::create([
-                        'quiniela_id' => $quiniela->id,
-                        'partido_numero' => $partido_numero + 1,
-                        'respuesta' => $respuesta,
-                    ]);
-                }
-
-                // Crear registro de pago pendiente (10 por quiniela)
-                Pago::create([
-                    'jugador_id' => $jugador->id,
-                    'numero' => $q['numero'],
-                    'monto' => 10, // 👈 ajusta según tu lógica
-                    'fecha_pago' => now(),
-                    'estado' => 'pendiente',
-                ]);
-
-                $totalGuardadas++;
+        foreach ($quinielas as $q) {
+            if (empty($q['nombre']) || empty($q['telefono']) || !isset($q['numero']) || !isset($q['resultados'])) {
+                throw new \Exception('Estructura de quiniela inválida.');
             }
 
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => "✅ Se guardaron {$totalGuardadas} quiniela(s) correctamente.",
-                'jugador_id' => $jugador->id,
-                'cantidad' => $totalGuardadas,
-                'total' => $totalGuardadas * 10,
+            $jugador = Jugador::firstOrCreate([
+                'nombre' => $q['nombre'],
+                'telefono' => $q['telefono'],
             ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(
-                [
-                    'success' => false,
-                    'error' => $e->getMessage(),
-                ],
-                500,
-            );
+
+            $quiniela = Quiniela::create([
+                'jugador_id' => $jugador->id,
+                'numero' => $q['numero'],
+                'numero_quiniela' => uniqid(),
+                'estado' => 'pendiente',
+            ]);
+
+            foreach ($q['resultados'] as $partido_numero => $respuesta) {
+                Respuestas::create([
+                    'quiniela_id' => $quiniela->id,
+                    'partido_numero' => $partido_numero + 1,
+                    'respuesta' => $respuesta,
+                ]);
+            }
+
+            Pago::create([
+                'jugador_id' => $jugador->id,
+                'numero' => $q['numero'],
+                'monto' => 10,
+                'fecha_pago' => now(),
+                'estado' => 'pendiente',
+            ]);
+
+            $totalGuardadas++;
         }
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'jugador_id' => $jugador->id,
+            'cantidad' => $totalGuardadas,
+            'total' => $totalGuardadas * 10,
+        ]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
+
 
     
 }

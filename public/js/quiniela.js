@@ -4,7 +4,6 @@ let quinielas = [];
 const costoPorQuiniela = 10;
 let quinielasGuardadas = false; // bandera para evitar duplicados
 
-
 // Validar teléfono (10 dígitos)
 function telefonoValido(numero) {
     return /^[0-9]{10}$/.test(numero);
@@ -17,24 +16,19 @@ function agregarQuiniela() {
     const telefono = document.getElementById('telefono').value.trim();
     const numero = document.querySelector('input[name="numero"]').value; // jornada
 
-    // Validar nombre
     if (!nombre) {
         Swal.fire('Campo requerido', 'Coloca tu nombre para continuar.', 'warning');
         return;
     }
-
-    // Validar teléfono
     if (!telefono) {
         Swal.fire('Campo requerido', 'Coloca tu número de celular para continuar.', 'warning');
         return;
     }
-
     if (!telefonoValido(telefono)) {
         Swal.fire('Teléfono inválido', 'Ingresa un número válido de 10 dígitos.', 'error');
         return;
     }
 
-    // Bloquear el campo nombre después de la primera quiniela
     nombreInput.readOnly = true;
 
     const resultados = [];
@@ -92,17 +86,10 @@ function mostrarQuinielas() {
     });
 }
 
-
-// Guardar quinielas sin pagar
+// Guardar quinielas y enviar por WhatsApp
 function guardarQuiniela() {
-
-
-    if (quinielasGuardadas) { 
-        Swal.fire('Ya guardaste tus quinielas', 'Procede al pago. No puedes volver a guardar esta jornada.', 'info'); 
-        return; }
-
     if (quinielas.length === 0) {
-        Swal.fire('Sin quinielas', '❌ No hay quinielas para guardar.', 'warning');
+        Swal.fire('Sin quinielas', '❌ No hay quinielas para enviar.', 'warning');
         return;
     }
 
@@ -112,8 +99,7 @@ function guardarQuiniela() {
         return;
     }
 
-    
-
+    // Guardar en la base de datos
     fetch('/public/quiniela', {
         method: 'POST',
         headers: {
@@ -126,23 +112,26 @@ function guardarQuiniela() {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Procede a tu pago.', 'success');
-            quinielasGuardadas = true; // 🔒 bloquear guardado document.getElementById('guardarBtn').disabled = true; // desactivar botón guardar
-            document.getElementById('agregarBtn').onclick = () => { Swal.fire('Ya guardaste tus quinielas', 'Procede al pago. No puedes agregar más.', 'info'); };
-            const numero = quinielas[0]?.numero || 6; // usa el número de jornada de la primera quiniela
+            Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Se abrirá WhatsApp.', 'success');
 
+            // Construir mensaje para WhatsApp
+            let mensaje = "👤 Nombre: " + quinielas[0].nombre + "\n📱 Teléfono: " + quinielas[0].telefono + "\n\n";
+            mensaje += "Quinielas registradas:\n";
+            quinielas.forEach((q, index) => {
+                mensaje += "Quiniela " + (index + 1) + ": " + q.resultados.join(' – ') + "\n";
+            });
+            mensaje += "\nPor favor envía tu comprobante de pago aquí.";
+
+            // Tu número de WhatsApp
+            let numeroDestino = "521XXXXXXXXXX"; // cámbialo por tu número real
+            let url = "https://wa.me/" + numeroDestino + "?text=" + encodeURIComponent(mensaje);
+
+            window.open(url, "_blank");
+
+            quinielasGuardadas = true;
             quinielas = [];
             document.getElementById('listaQuinielas').innerHTML = '';
-            
-            const resumen = document.getElementById('resumen');
-            resumen.innerHTML = `
-            <p><strong>Total de quinielas:</strong> ${data.cantidad}</p>
-            <p><strong>Total a pagar:</strong> $${data.total} MXN</p>
-            <a href="/pagos/pagar/${data.jugador_id}" class="btn btn-lg btn-success w-100 mt-3" style="font-size: 1.2rem; padding: 12px;">
-                    💳 Pagar con Mercado Pago
-                </a>
-            `;
-        
+            actualizarResumen();
         } else {
             Swal.fire('Error', '❌ ' + (data.error || 'No se pudo guardar.'), 'error');
         }
@@ -151,6 +140,5 @@ function guardarQuiniela() {
         console.error(err);
         Swal.fire('Error', '❌ Ocurrió un problema al guardar la quiniela.', 'error');
     });
-
 }
 
