@@ -112,10 +112,6 @@
                         📲 Enviar por WhatsApp
                         </button>
                 
-                        <!--<button type="button" class="btn btn-success btn-lg w-100" onclick="pagarConMercadoPago()">
-                            💳 Pagar con Mercado Pago
-                        </button>-->
-
                         <p class="mt-2 mb-1">Costo por quiniela: <strong>$10 MXN</strong></p>
                         <p id="resumen">0 quinielas – Total: $0 MXN</p>
                         <div id="listaQuinielas"></div>

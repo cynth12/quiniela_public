@@ -9,9 +9,6 @@ use App\Models\Quiniela;
 use App\Models\Respuestas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use MercadoPago\MercadoPagoConfig;
-use MercadoPago\Client\Preference\PreferenceClient;
-use MercadoPago\Client\Payment\PaymentClient;
 use Illuminate\Support\Facades\Log;
 
 class QuinielaPublicController extends Controller
