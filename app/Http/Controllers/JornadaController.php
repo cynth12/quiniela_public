@@ -20,7 +20,7 @@ class JornadaController extends Controller
 
     public function create()
     {
-        $equipos = ['América', 'Atlas', 'Chivas', 'Cruz Azul', 'Pumas', 'Tigres', 'Toluca', 'Monterrey', 'Santos', 'Pachuca', 'Querétaro', 'Necaxa', 'Mazatlán', 'Juárez', 'León', 'Tijuana', 'Atlético San Luis'];
+        $equipos = ['América', 'Atlas', 'Chivas', 'Puebla', 'Cruz Azul', 'Pumas', 'Tigres', 'Toluca', 'Monterrey', 'Santos', 'Pachuca', 'Querétaro', 'Necaxa', 'Mazatlán', 'Juárez', 'León', 'Tijuana', 'Atlético San Luis'];
         return view('jornada.create', compact('equipos'));
     }
 
