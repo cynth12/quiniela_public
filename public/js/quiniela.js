@@ -113,7 +113,7 @@ function guardarQuiniela() {
     .then(data => {
         if (data.success) {
             Swal.fire('¡Gracias por participar!', 'Tus quinielas se guardaron correctamente. Se abrirá WhatsApp.', 'success');
-
+            const total = quinielas.length * costoPorQuiniela;
             // Construir mensaje para WhatsApp
             let mensaje = "👤 Nombre: " + quinielas[0].nombre + "\n📱 Teléfono: " + quinielas[0].telefono + "\n\n";
             mensaje += "Quinielas registradas:\n";
