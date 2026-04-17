@@ -31,9 +31,11 @@ Route::get('/jornada/create', [JornadaController::class, 'create'])->name('jorna
 Route::post('/jornada', [JornadaController::class, 'store'])->name('jornada.store');
 Route::get('/jornada/{id}', [JornadaController::class, 'show'])->name('jornada.show');
 Route::post('/jornadas/numero/{numero}/cerrar', [JornadaController::class, 'cerrarPorNumero'])->name('jornadas.cerrar');
+Route::post('/jornada/{id}/cerrar', [JornadaController::class, 'cerrar'])->name('jornada.cerrar');
 Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name('ganadores.todos');
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
 Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'])->name('jornada.show.numero');
+
 
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');
@@ -54,6 +56,7 @@ Route::get('/quinielas/jugador/{id}', [QuinielaController::class, 'verPorJugador
 
 use App\Http\Controllers\PagoController;
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+Route::post('/pagos/{id}/marcar-pagado', [PagoController::class, 'marcarPagado'])->name('pagos.marcarPagado');
 Route::delete('/pagos/{id}', [PagoController::class, 'destroy'])->name('pagos.destroy');
 Route::get('/pagos/success', [PagoController::class, 'success'])->name('pagos.success'); 
 Route::get('/pagos/failure', [PagoController::class, 'failure'])->name('pagos.failure'); 
@@ -61,8 +64,7 @@ Route::get('/pagos/pending', [PagoController::class, 'pending'])->name('pagos.pe
 Route::get('/pagos/pagar/{jugador}', [PagoController::class, 'pagar'])->name('pagos.pagar');
 Route::get('/pago/{jugadorId}', [PagoController::class, 'generarPago'])->name('pagos.generar');
 Route::post('/pagos/{id}/comprobante', [PagoController::class, 'generarComprobante'])->name('pagos.generarComprobante');
-Route::post('/pagos/{id}/marcar-pagado', [PagoController::class, 'marcarPagado'])
-    ->name('pagos.marcarPagado');
+
 
    
 

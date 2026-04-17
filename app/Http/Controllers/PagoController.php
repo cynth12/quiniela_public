@@ -53,6 +53,22 @@ class PagoController extends Controller
         }
     }
 
+
+    public function comprobante($id)
+{
+    $pago = Pago::with('jugador')->findOrFail($id);
+
+    $jugador = $pago->jugador;
+    $quinielas = \App\Models\Quiniela::where('jugador_id', $jugador->id)
+        ->where('numero', $pago->numero)
+        ->with('respuestas')
+        ->get();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago', 'quinielas'));
+    return $pdf->download("comprobante_{$jugador->id}_{$pago->id}.pdf");
+}
+
+
     public function destroy($id)
     {
         $pago = Pago::findOrFail($id);
