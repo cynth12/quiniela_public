@@ -120,8 +120,9 @@ function guardarQuiniela() {
             quinielas.forEach((q, index) => {
                 mensaje += "Quiniela " + (index + 1) + ": " + q.resultados.join(' – ') + "\n";
                 });
-            
-            mensaje += "\nPor favor envía tu comprobante de pago aquí.";
+            mensaje += "\n💰 Total a pagar: $" + total + " MXN\n";
+            mensaje += "\n😊 Por favor realiza el pago de tus quinielas y envía tu comprobante.\n";
+            mensaje += "\nCLABE: 722969069986621442, Beneficiario: Cynthia Eileen Gonzalez Perez, Institución: Mercado Pago W ";
 
             // Tu número de WhatsApp
             let numeroDestino = "529843833329"; // cámbialo por tu número real
