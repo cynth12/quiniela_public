@@ -50,7 +50,7 @@
             </tr>
         </thead>
         <tbody>
-            @for ($i = 0; $i < 3; $i++)
+            @for ($i = 0; $i < 9; $i++)
 <tr>
     <td>
         {{ $i + 1 }}
