@@ -31,11 +31,10 @@ Route::get('/jornada/create', [JornadaController::class, 'create'])->name('jorna
 Route::post('/jornada', [JornadaController::class, 'store'])->name('jornada.store');
 Route::get('/jornada/{id}', [JornadaController::class, 'show'])->name('jornada.show');
 Route::post('/jornadas/numero/{numero}/cerrar', [JornadaController::class, 'cerrarPorNumero'])->name('jornadas.cerrar');
-Route::post('/jornada/{id}/cerrar', [JornadaController::class, 'cerrar'])->name('jornada.cerrar');
+Route::post('/jornada/{id}/cerrar-simple', [JornadaController::class, 'cerrar'])->name('jornada.cerrar.simple');
 Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name('ganadores.todos');
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
 Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'])->name('jornada.show.numero');
-
 
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');

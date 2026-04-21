@@ -31,6 +31,11 @@
             </div>
         @endif
 
+        @if ($jornada->cerrada)
+                <div class="alert alert-danger">
+                    ⚠ Jornada cerrada, ya no se aceptan quinielas.
+                </div>
+            @else
 
 
 
@@ -107,17 +112,20 @@
                     </form>
 
                     <div class="text-left mt-4" style="color: white;">
-                        <button type="button" class="btn btn-primary btn-lg w-100"
-                        onclick="guardarQuiniela()">
-                        📲 Enviar por WhatsApp
+                        <button type="button" class="btn btn-primary btn-lg w-100" onclick="guardarQuiniela()">
+                            📲 Enviar por WhatsApp
                         </button>
-                
+
                         <p class="mt-2 mb-1">Costo por quiniela: <strong>$10 MXN</strong></p>
                         <p id="resumen">0 quinielas – Total: $0 MXN</p>
                         <div id="listaQuinielas"></div>
                     </div>
                 </div>
             </div>
+            
+                {{-- Aquí tu formulario de quinielas --}}
+            @endif
+
             <script></script>
             <script src="{{ asset('js/quiniela.js') }}"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

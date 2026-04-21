@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\Log;
 
 class QuinielaPublicController extends Controller
 {
+
+
     // Mostrar jornada y partidos por número
     public function jornadaPorNumero($numero, Request $request)
     {
         $jornadaModelo = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
+
+        // 🚫 Validación: si la jornada está cerrada, no se abre el link
+    if ($jornadaModelo->cerrada) {
+        abort(403, '⚠ Esta jornada ya está cerrada, no se puede acceder.');
+    }
 
         $jornada = [
             'id' => $jornadaModelo->id,
@@ -44,6 +51,9 @@ class QuinielaPublicController extends Controller
     // Guardar quinielas públicas (JSON desde fetch)
   public function store(Request $request)
 {
+
+
+
     $quinielas = $request->input('quinielas');
 
     if (!is_array($quinielas) || count($quinielas) === 0) {

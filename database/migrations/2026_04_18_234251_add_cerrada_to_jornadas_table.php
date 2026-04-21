@@ -9,21 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-       Schema::table('partidos', function (Blueprint $table) {
-        $table->dropColumn('jornada_id');
-        $table->unsignedInteger('numero')->after('id');
+    public function up()
+{
+    Schema::table('jornadas', function (Blueprint $table) {
+        $table->boolean('cerrada')->default(false);
     });
-    }
+}
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('partidos', function (Blueprint $table) {
-            //
+        Schema::table('jornadas', function (Blueprint $table) {
+            $table->dropColumn('cerrada');
         });
     }
 };

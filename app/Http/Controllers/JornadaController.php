@@ -58,6 +58,16 @@ class JornadaController extends Controller
         return view('jornada.show', compact('jornada'));
     }
 
+    // 👉 Aquí insertas el método cerrar
+    public function cerrarSimple($id)
+    {
+        $jornada = Jornada::findOrFail($id);
+        $jornada->cerrada = true;
+        $jornada->save();
+
+        return redirect()->back()->with('success', '⚠ Jornada cerrada, el link público ya no está disponible.');
+    }
+
     public function cerrar(Request $request, $id)
     {
         $jornada = Jornada::with('partidos')->findOrFail($id);
