@@ -90,6 +90,8 @@ class JornadaController extends Controller
     {
         $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
+        
+
         foreach ($request->resultados as $partido_numero => $resultado) {
             Resultado::updateOrCreate(
                 ['numero' => $numero, 'partido_numero' => $partido_numero],

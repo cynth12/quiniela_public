@@ -25,81 +25,44 @@
             @if (!$jornada->cerrada)
                 {{-- Formulario único que guarda resultados y cierra jornada --}}
                 <form method="POST" action="{{ route('jornadas.cerrar', $jornada->numero) }}">
-                    @csrf
-                    <table class="table text-center">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Local</th>
-                                <th>Visitante</th>
-                                <th>Resultado oficial</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($jornada->partidos as $partido)
-                                <tr>
-                                    <td>{{ $partido->partido_numero }}</td>
-                                    <td>{{ $partido->local }}</td>
-                                    <td>{{ $partido->visitante }}</td>
-                                    <td>
-                                        <input type="text" name="resultados[{{ $partido->partido_numero }}]"
-                                            value="{{ old('resultados.' . $partido->partido_numero) }}" maxlength="1"
-                                            class="form-control text-uppercase text-center" placeholder="L/V/E">
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <form action="{{ route('jornada.cerrar', $jornada->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-warning mt-3">
-                            📅 Cerrar jornada y guardar resultados
-                        </button>
-                    </form>
+        @csrf
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Local</th>
+                    <th>Visitante</th>
+                    <th>Resultado oficial</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($jornada->partidos as $partido)
+                    <tr>
+                        <td>{{ $partido->partido_numero }}</td>
+                        <td>{{ $partido->local }}</td>
+                        <td>{{ $partido->visitante }}</td>
+                        <td>
+                            <input type="text" name="resultados[{{ $partido->partido_numero }}]"
+                                value="{{ old('resultados.' . $partido->partido_numero) ?? ($partido->resultado->resultado_oficial ?? '') }}"
+                                maxlength="1" class="form-control text-uppercase text-center" placeholder="L/V/E">
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-                    {{-- Botón rojo: cerrar jornada simple (sin validar resultados) --}}
-                    <form action="{{ route('jornada.cerrar.simple', $jornada->id) }}" method="POST"
-                        style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-danger">
-                            🔒 Cerrar jornada
-                        </button>
-                    </form>
-                </form>
-            @else
-                {{-- Jornada ya cerrada: mostrar resultados oficiales --}}
-                <table class="table table-bordered text-center">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Local</th>
-                            <th>Visitante</th>
-                            <th>Resultado oficial</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($jornada->partidos as $partido)
-                            @php
-                                $resultado = strtolower($partido->resultado->resultado_oficial ?? '');
-                                $simbolo = match ($resultado) {
-                                    'l' => '🏠 L',
-                                    'v' => '✈️ V',
-                                    'e' => '⚖️ E',
-                                    default => '⏳ Pendiente',
-                                };
-                            @endphp
-                            <tr>
-                                <td>{{ $partido->partido_numero }}</td>
-                                <td>{{ $partido->local }}</td>
-                                <td>{{ $partido->visitante }}</td>
-                                <td class="text-center">{{ $simbolo }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <p class="text-success mt-3">✅ Esta jornada ya fue cerrada. Los resultados oficiales están registrados.</p>
-            @endif
+        <button type="submit" class="btn btn-success mt-3">
+            Guardar resultados oficiales y calcular ganadores
+        </button>
+    </form>
 
+    @if($jornada->cerrada)
+        <div class="alert alert-info mt-3">
+            ⚠ La jornada está cerrada al público, pero aún puedes registrar resultados oficiales y calcular ganadores.
         </div>
-    </div>
+    @else
+        <div class="alert alert-warning mt-3">
+            📅 La jornada sigue abierta. Puedes cerrar con resultados oficiales o usar el botón rojo para bloquear el link.
+        </div>
+    @endif
 @stop
