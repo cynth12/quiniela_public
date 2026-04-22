@@ -8,14 +8,20 @@ class Jugador extends Model
 {
     protected $table = 'jugadors'; // nombre exacto de la tabla
 
-    protected $fillable = ['nombre', 'telefono', 'pagada'];
+    protected $fillable = ['nombre', 'telefono', 'pagada', 'archivado'];
 
-    protected $casts = [ 'pagada' => 'boolean', ];
+    protected $casts = [
+        'pagada' => 'boolean',
+        'archivado' => 'boolean',
+    ];
 
     public function quinielas()
-{
-    return $this->hasMany(Quiniela::class);
-}
+    {
+        return $this->hasMany(Quiniela::class);
+    }
 
-    
+    public function pagos()
+    {
+        return $this->hasMany(Pago::class);
+    }
 }
