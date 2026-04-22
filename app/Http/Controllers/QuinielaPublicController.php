@@ -23,7 +23,7 @@ class QuinielaPublicController extends Controller
         
 
         // 🚫 Validación: si la jornada está cerrada, no se abre el link
-    if ($jornadaModelo->cerrada) {
+        if ($jornada->cerrada) {
         abort(403, '⚠ Esta jornada ya está cerrada, no se puede acceder.');
     }
 
