@@ -33,6 +33,8 @@ Route::get('/jornada/{id}', [JornadaController::class, 'show'])->name('jornada.s
 Route::post('/jornadas/numero/{numero}/cerrar', [JornadaController::class, 'cerrarPorNumero'])->name('jornadas.cerrar');
 Route::post('/jornada/{id}/cerrar-simple', [JornadaController::class, 'cerrarSimple'])
     ->name('jornada.cerrar.simple');
+Route::post('/jornada/{id}/cerrar', [JornadaController::class, 'cerrar'])
+    ->name('jornada.cerrar');
 
 Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name('ganadores.todos');
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
