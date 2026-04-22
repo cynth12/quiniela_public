@@ -8,15 +8,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('css/quiniela.css') }}">
-
 </head>
 
 <body class="bg-light">
     <img src="{{ asset('img/logo-zas.jpeg') }}" width="120" style="margin-bottom: 10px;">
 
     <div class="container py-4">
-        <h2 class="jornada-info">📆 Jornada {{ $jornada['numero'] }} – {{ $jornada['fecha'] }} – 💰
-            {{ $jornada['premio'] }}</h2>
+        <h2 class="jornada-info">
+            📆 Jornada {{ $jornada['numero'] }} – {{ $jornada['fecha'] }} – 💰 {{ $jornada['premio'] }}
+        </h2>
 
         @php
             $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
@@ -33,10 +33,6 @@
                 ⚠️ Jornada cerrada, ya no se aceptan quinielas.
             </div>
         @endif
-
-
-
-
 
         <div class="card shadow-sm">
             <div class="card">
@@ -92,22 +88,21 @@
                         <div class="row text-center mt-4">
                             <div class="col-md-4 mb-2">
                                 <button id="agregarBtn" type="button" class="btn btn-primary w-100"
-                                    onclick="agregarQuiniela()"{{ $quinielasGuardadas ? 'disabled' : '' }}>
+                                    onclick="agregarQuiniela()" {{ $quinielasGuardadas ? 'disabled' : '' }}>
                                     ➕ Agregar Quiniela
                                 </button>
-
-
                             </div>
                             <div class="col-md-4 mb-2">
-                                <button type="button" onclick="aleatorio()" class="btn btn-warning w-100">🎲
-                                    Aleatorio</button>
+                                <button type="button" onclick="aleatorio()" class="btn btn-warning w-100">
+                                    🎲 Aleatorio
+                                </button>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <button type="button" onclick="limpiar()" class="btn btn-secondary w-100">🧹
-                                    Limpiar</button>
+                                <button type="button" onclick="limpiar()" class="btn btn-secondary w-100">
+                                    🧹 Limpiar
+                                </button>
                             </div>
                         </div>
-
                     </form>
 
                     <div class="text-left mt-4" style="color: white;">
@@ -121,13 +116,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            {{-- Aquí tu formulario de quinielas --}}
-            @endif
-
-            <script></script>
-            <script src="{{ asset('js/quiniela.js') }}"></script>
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/quiniela.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
-
 </html>
