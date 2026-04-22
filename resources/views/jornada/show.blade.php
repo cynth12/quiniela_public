@@ -50,8 +50,16 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <button type="submit" class="btn btn-warning mt-3">📅 Cerrar jornada y guardar resultados</button>
-                    <form action="{{ route('jornada.cerrar.simple', $jornada->id) }}" method="POST" style="display:inline;">
+                    <form action="{{ route('jornada.cerrar', $jornada->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-warning mt-3">
+                            📅 Cerrar jornada y guardar resultados
+                        </button>
+                    </form>
+
+                    {{-- Botón rojo: cerrar jornada simple (sin validar resultados) --}}
+                    <form action="{{ route('jornada.cerrar.simple', $jornada->id) }}" method="POST"
+                        style="display:inline;">
                         @csrf
                         <button type="submit" class="btn btn-danger">
                             🔒 Cerrar jornada
