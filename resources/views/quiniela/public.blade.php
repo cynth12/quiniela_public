@@ -28,11 +28,12 @@
             </div>
         @endif
 
-        @if ($jornada['cerrada'])
+        @if ($jornada->cerrada)
             <div class="alert alert-danger">
                 ⚠️ Jornada cerrada, ya no se aceptan quinielas.
             </div>
         @endif
+
 
         <div class="card shadow-sm">
             <div class="card">
@@ -122,4 +123,5 @@
     <script src="{{ asset('js/quiniela.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
+
 </html>
