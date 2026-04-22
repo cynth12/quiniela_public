@@ -366,7 +366,7 @@ return [
         [
             'text' => 'Archivo',
             'icon_color' => 'red',
-            'url' => 'archivo.index',
+            'url' => 'archivo',
         ],
         [
             'text' => 'Bolsa acumulada',
