@@ -31,11 +31,11 @@
             </div>
         @endif
 
-        @if ($jornada->cerrada)
-                <div class="alert alert-danger">
-                    ⚠ Jornada cerrada, ya no se aceptan quinielas.
-                </div>
-            @else
+        @if ($jornada['cerrada'])
+    <div class="alert alert-danger">
+        ⚠️ Jornada cerrada, ya no se aceptan quinielas.
+    </div>
+        @endif  
 
 
 
