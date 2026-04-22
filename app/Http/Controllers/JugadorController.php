@@ -58,47 +58,43 @@ class JugadorController extends Controller
         //
     }
 
-public function marcarPagado($id)
-{
-    try {
-        $jugador = Jugador::with('quinielas')->findOrFail($id);
+    public function marcarPagado($id)
+    {
+        try {
+            $jugador = Jugador::with('quinielas')->findOrFail($id);
 
-        // Cambiar estado del jugador
-        $jugador->pagada = 1;
-        $jugador->save();
+            // Cambiar estado del jugador
+            $jugador->pagada = 1;
+            $jugador->save();
 
-        // Tomar la quiniela del jugador
-        $quiniela = $jugador->quinielas->first();
+            // Tomar la quiniela del jugador
+            $quiniela = $jugador->quinielas->first();
 
-        if ($quiniela) {
-            // Buscar el pago que coincide con jugador_id y numero de la quiniela
-            $pago = Pago::where('jugador_id', $jugador->id)
-                        ->where('numero', $quiniela->numero)
-                        ->first();
+            if ($quiniela) {
+                // Buscar el pago que coincide con jugador_id y numero de la quiniela
+                $pago = Pago::where('jugador_id', $jugador->id)->where('numero', $quiniela->numero)->first();
 
-            if ($pago) {
-                // Generar PDF
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago'));
-                $pdfPath = "comprobantes/comprobante_{$jugador->id}_{$quiniela->numero}.pdf";
-                $pdf->save(storage_path("app/public/{$pdfPath}"));
+                if ($pago) {
+                    // Generar PDF
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago'));
+                    $pdfPath = "comprobantes/comprobante_{$jugador->id}_{$quiniela->numero}.pdf";
+                    $pdf->save(storage_path("app/public/{$pdfPath}"));
 
-                // Actualizar pago
-                $pago->update([
-                    'estado' => 'pagado',
-                    'comprobante_pdf' => $pdfPath
-                ]);
+                    // Actualizar pago
+                    $pago->update([
+                        'estado' => 'pagado',
+                        'comprobante_pdf' => $pdfPath,
+                    ]);
+                }
             }
+
+            return redirect()->route('jugadores.index')->with('success', '✅ Jugador marcado como pagado y comprobante generado.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('jugadores.index')
+                ->with('error', '❌ Error al marcar como pagado: ' . $e->getMessage());
         }
-
-        return redirect()->route('jugadores.index')
-            ->with('success', '✅ Jugador marcado como pagado y comprobante generado.');
-    } catch (\Exception $e) {
-        return redirect()->route('jugadores.index')
-            ->with('error', '❌ Error al marcar como pagado: '.$e->getMessage());
     }
-}
-
-
 
     /**
      * Remove the specified resource from storage.
@@ -112,5 +108,29 @@ public function marcarPagado($id)
         $jugador->delete();
 
         return redirect()->route('jugadores.index')->with('success', 'Jugador y sus quinielas eliminados correctamente.');
+    }
+
+    public function archivarTodos()
+    {
+        // 🔥 Marcar todos los jugadores de la jornada actual como archivados
+        Jugador::query()->update(['archivado' => true]);
+        Quiniela::query()->update(['archivado' => true]);
+        Pago::query()->update(['archivado' => true]);
+
+        return back()->with('success', 'Todos los registros fueron archivados. El panel está limpio para la nueva jornada.');
+    }
+
+    public function archivo()
+    {
+        // 🔥 Filtrar jugadores de jornadas cerradas
+        $jugadoresArchivados = Jugador::whereHas('quinielas', function ($q) {
+            $q->whereHas('jornada', function ($j) {
+                $j->where('cerrada', true);
+            });
+        })
+            ->with('quinielas', 'pagos')
+            ->get();
+
+        return view('archivo.index', compact('jugadoresArchivados'));
     }
 }

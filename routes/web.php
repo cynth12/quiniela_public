@@ -19,10 +19,12 @@ Route::get('/jugadores', [JugadorController::class, 'index'])->name('jugadores.i
 Route::get('/jugadores/create', [JugadorController::class, 'create'])->name('jugadores.create');
 Route::post('/jugadores', [JugadorController::class, 'store'])->name('jugadores.store');
 // Marcar jugador como pagado
-Route::post('/jugadores/{id}/pagado', [JugadorController::class, 'marcarPagado'])->name('jugadores.marcarPagado');
-
+//Route::post('/jugadores/{id}/pagado', [JugadorController::class, 'marcarPagado'])->name('jugadores.marcarPagado');
 // Eliminar jugador
 Route::delete('/jugadores/{jugador}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
+Route::get('/archivo', [JugadorController::class, 'archivo'])->name('archivo.index');
+Route::post('/jugadores/archivar-todos', [JugadorController::class, 'archivarTodos'])->name('jugadores.archivarTodos');
+
 
 use App\Http\Controllers\JornadaController;
 

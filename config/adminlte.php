@@ -364,9 +364,9 @@ return [
         ],
         
         [
-            'text' => 'Cierre de jornada',
+            'text' => 'Archivo',
             'icon_color' => 'red',
-            'url' => '/jornada/cierre',
+            'url' => 'archivo.index',
         ],
         [
             'text' => 'Bolsa acumulada',
