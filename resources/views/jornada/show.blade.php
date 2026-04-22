@@ -54,6 +54,12 @@
                     Guardar resultados oficiales y calcular ganadores
                 </button>
             </form>
+            <form method="POST" action="{{ route('jornada.cerrar.simple', $jornada->id) }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn-danger mt-3">
+                    🔴 Cerrar jornada (bloquear link)
+                </button>
+            </form>
 
             @if($jornada->cerrada)
                 <div class="alert alert-info mt-3">
