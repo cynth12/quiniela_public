@@ -22,9 +22,6 @@
             $quinielasGuardadas = isset($jugador) && $jugador->quinielas->count() > 0;
         @endphp
 
-
-
-
         @if ($quinielasGuardadas)
             <div class="alert alert-info">
                 ✅ Ya guardaste tu quiniela. No puedes modificarla en esta sesión.
@@ -32,10 +29,12 @@
         @endif
 
         @if ($jornada['cerrada'])
-    <div class="alert alert-danger">
-        ⚠️ Jornada cerrada, ya no se aceptan quinielas.
-    </div>
-        @endif  
+            <div class="alert alert-danger">
+                ⚠️ Jornada cerrada, ya no se aceptan quinielas.
+            </div>
+        @endif
+
+
 
 
 
@@ -122,8 +121,8 @@
                     </div>
                 </div>
             </div>
-            
-                {{-- Aquí tu formulario de quinielas --}}
+
+            {{-- Aquí tu formulario de quinielas --}}
             @endif
 
             <script></script>
