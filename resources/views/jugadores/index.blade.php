@@ -15,11 +15,14 @@
                 🗂️ Archivar todo
             </button>
         </form>
-        <form action="{{ route('jugadores.destroy', $j->id) }}" method="POST" style="display:inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Borrar todo</button>
-                            </form>
+        
+        <form action="{{ route('jugadores.borrarTodos') }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger mb-3">
+        🗑 Borrar todo
+    </button>
+</form>
 
 
 
