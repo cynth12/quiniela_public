@@ -121,16 +121,16 @@ class JugadorController extends Controller
     }
 
     public function archivo()
-    {
-        // 🔥 Filtrar jugadores de jornadas cerradas
-        $jugadoresArchivados = Jugador::whereHas('quinielas', function ($q) {
-            $q->whereHas('jornada', function ($j) {
-                $j->where('cerrada', true);
-            });
-        })
-            ->with('quinielas', 'pagos')
-            ->get();
+{
+    $jugadoresArchivados = Jugador::where('archivado', true)
+        ->with(['quinielas' => function ($q) {
+            $q->where('archivado', true);
+        }, 'pagos' => function ($p) {
+            $p->where('archivado', true);
+        }])
+        ->get();
 
-        return view('archivo.index', compact('jugadoresArchivados'));
-    }
+    return view('archivo.index', compact('jugadoresArchivados'));
+}
+
 }
