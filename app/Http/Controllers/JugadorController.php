@@ -121,16 +121,28 @@ class JugadorController extends Controller
     }
 
     public function archivo()
-{
-    $jugadoresArchivados = Jugador::where('archivado', true)
-        ->with(['quinielas' => function ($q) {
-            $q->where('archivado', true);
-        }, 'pagos' => function ($p) {
-            $p->where('archivado', true);
-        }])
-        ->get();
+    {
+        $jugadoresArchivados = Jugador::where('archivado', true)
+            ->with([
+                'quinielas' => function ($q) {
+                    $q->where('archivado', true);
+                },
+                'pagos' => function ($p) {
+                    $p->where('archivado', true);
+                },
+            ])
+            ->get();
 
-    return view('archivo.index', compact('jugadoresArchivados'));
-}
+        return view('archivo.index', compact('jugadoresArchivados'));
+    }
 
+    public function borrarTodosJugadores()
+    {
+        // Eliminar todos los jugadores junto con sus quinielas y pagos
+        Jugador::query()->delete();
+        Quiniela::query()->delete();
+        Pago::query()->delete();
+
+        return back()->with('success', 'Todos los jugadores, quinielas y pagos fueron eliminados.');
+    }
 }

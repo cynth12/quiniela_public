@@ -24,6 +24,8 @@ Route::post('/jugadores/{id}/pagado', [JugadorController::class, 'marcarPagado']
 Route::delete('/jugadores/{jugador}', [JugadorController::class, 'destroy'])->name('jugadores.destroy');
 Route::get('/archivo', [JugadorController::class, 'archivo'])->name('archivo.index');
 Route::post('/jugadores/archivar-todos', [JugadorController::class, 'archivarTodos'])->name('jugadores.archivarTodos');
+Route::delete('/jugadores/borrar-todos', [JugadorController::class, 'borrarTodosJugadores'])->name('jugadores.borrarTodos');
+
 
 
 use App\Http\Controllers\JornadaController;
