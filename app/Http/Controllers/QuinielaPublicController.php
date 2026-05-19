@@ -58,19 +58,22 @@ class QuinielaPublicController extends Controller
             $totalGuardadas = 0;
             $jornadaNumero = null;
 
+            // Crear UN jugador por envío
+            $primerQ = $quinielas[0];
+
+            $jugador = Jugador::create([
+                'nombre' => $primerQ['nombre'],
+                'telefono' => $primerQ['telefono'],
+            ]);
+
             foreach ($quinielas as $q) {
                 if (empty($q['nombre']) || empty($q['telefono']) || !isset($q['numero']) || !isset($q['resultados'])) {
                     throw new \Exception('Estructura de quiniela inválida.');
                 }
 
-                $jugador = Jugador::firstOrCreate([
-                    'nombre' => $q['nombre'],
-                    'telefono' => $q['telefono'],
-                ]);
-
                 $quiniela = Quiniela::create([
                     'jugador_id' => $jugador->id,
-                    'numero' => $q['numero'],
+                    'numero' => $primerQ['numero'],
                     'numero_quiniela' => uniqid(),
                     'estado' => 'pendiente',
                 ]);
@@ -84,31 +87,35 @@ class QuinielaPublicController extends Controller
                 }
 
                 $totalGuardadas++;
-                $jornadaNumero = $q['numero']; // guardamos la jornada
+                $jornadaNumero = $primerQ['numero']; // guardamos la jornada
             }
 
-            // 👉 Crear un solo pago acumulado
-            $montoTotal = $totalGuardadas * 10; // cada quiniela cuesta $10
+            // 👉 Buscar pago existente
+            $pago = Pago::where('jugador_id', $jugador->id)->where('numero', $jornadaNumero)->first();
 
-            Pago::updateOrCreate(
-                [
+            $nuevoMonto = $totalGuardadas * 10;
+
+            if ($pago) {
+                // SUMAR al monto existente
+                $pago->monto += $nuevoMonto;
+                $pago->save();
+            } else {
+                // Crear nuevo pago
+                Pago::create([
                     'jugador_id' => $jugador->id,
                     'numero' => $jornadaNumero,
-                ],
-                [
-                    'monto' => $montoTotal,
+                    'monto' => $nuevoMonto,
                     'fecha_pago' => now(),
                     'estado' => 'pendiente',
-                ],
-            );
-
+                ]);
+            }
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'jugador_id' => $jugador->id,
                 'cantidad' => $totalGuardadas,
-                'total' => $montoTotal,
+                'total' => $nuevoMonto,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
