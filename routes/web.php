@@ -43,6 +43,18 @@ Route::post('/jornada/{id}/cerrar', [JornadaController::class, 'cerrar'])
 Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name('ganadores.todos');
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
 Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'])->name('jornada.show.numero');
+Route::get('/ganadores/pdf/{numero}', [JornadaController::class, 'pdfFinal'])
+    ->name('ganadores.pdf');
+
+Route::get('/jornadas/{numero}/avance', [JornadaController::class, 'avance'])
+    ->name('jornada.avance');
+
+Route::post('/jornadas/{numero}/guardar-avance', [JornadaController::class, 'guardarAvance'])
+    ->name('jornada.guardarAvance');
+
+Route::get('/jornadas/{numero}/avance/pdf', [JornadaController::class, 'pdfAvance'])
+    ->name('avance.pdf');
+
 
 use App\Http\Controllers\QuinielaPublicController;
 Route::get('/public/jornada/numero/{numero}', [QuinielaPublicController::class, 'jornadaPorNumero'])->name('quiniela.public');

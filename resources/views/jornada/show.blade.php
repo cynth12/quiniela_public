@@ -50,6 +50,12 @@
                     </tbody>
                 </table>
 
+                {{-- BOTÓN AVANCE --}}
+                <button type="submit" formaction="{{ route('jornada.guardarAvance', $jornada->numero) }}"
+                    class="btn btn-primary">
+                    📊 Guardar avance
+                </button>
+
                 <button type="submit" class="btn btn-success mt-3">
                     Guardar resultados oficiales y calcular ganadores
                 </button>
@@ -61,13 +67,15 @@
                 </button>
             </form>
 
-            @if($jornada->cerrada)
+            @if ($jornada->cerrada)
                 <div class="alert alert-info mt-3">
-                    ⚠ La jornada está cerrada al público, pero aún puedes registrar resultados oficiales y calcular ganadores.
+                    ⚠ La jornada está cerrada al público, pero aún puedes registrar resultados oficiales y calcular
+                    ganadores.
                 </div>
             @else
                 <div class="alert alert-warning mt-3">
-                    📅 La jornada sigue abierta. Puedes cerrar con resultados oficiales o usar el botón rojo para bloquear el link.
+                    📅 La jornada sigue abierta. Puedes cerrar con resultados oficiales o usar el botón rojo para bloquear
+                    el link.
                 </div>
             @endif
 
