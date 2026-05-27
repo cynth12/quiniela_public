@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Jornadas')
+@section('title', 'Mundial-fase de grupos')
 
 @section('content')
 
@@ -14,7 +14,7 @@
     @endif
 
     <div class="jornada-header">
-        <h1> 🗓️ Fase de grupos</h1>
+        <h1> 🗓️ Fases registradas </h1>
     </div><br>
 
     <div id="lista-jornadas">

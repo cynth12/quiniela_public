@@ -196,8 +196,8 @@ return [
     'classes_content_wrapper' => '',
     'classes_content_header' => '',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
-    'classes_sidebar_nav' => '',
+    'classes_sidebar' => 'sidebar-dark-success elevation-4',
+    'classes_sidebar_nav' => 'nav-pills nav-sidebar flex-column nav-success',
     'classes_topnav' => 'navbar-white navbar-light',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
@@ -299,82 +299,137 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
 
-        // Sidebar items:
-        [
-            'type' => 'sidebar-menu-search',
-            'text' => 'buscar',
-        ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'Crear Jornada',
-            'url' => '/jornada/create',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'MENU'],
+    // SEARCH
+    [
+        'type' => 'sidebar-menu-search',
+        'text' => 'buscar',
+    ],
 
-         [
-            'text' => 'Quinielas',
-            'url' => '/quiniela',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'Jugadores',
-            'url' => '/jugadores',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-          [
-             'text' => 'Jornadas',
-            'url'  => 'jornada',
-            'icon' => 'fas fa-fw fa-calendar',
-        ],
-        [
-            'text' => 'Resultados',
-            'url' => 'resultados',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-         
-        [
-            'text' => 'Ganadores',
-            'url' => 'ganadores',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-      
-        ['header' => 'ESTADISTICAS'],
+    // BOTON CREAR JORNADA mx
+    [
+        'text' => 'Crear Jornada',
+        'url' => '/jornada/create',
+        'icon' => 'far fa-fw fa-file',
+        'label_color' => 'bg-green',
+    ],
 
-        [
-            'text' => 'Pagos',
-            'icon_color' => 'red',
-            'url' => 'pagos',
-        ],
-        
-        [
-            'text' => 'Archivo',
-            'icon_color' => 'red',
-            'url' => 'archivo',
-        ],
-        [
-            'text' => 'Bolsa acumulada',
-            'icon_color' => 'cyan',
-            'url' => '#',
+    // BOTON CREAR JORNADA mundial
+    [
+        'text' => 'Crear Fase',
+        'url' => '/jornada/create',
+        'icon' => 'far fa-fw fa-file',
+        'label_color' => 'lime',
+    ],
+
+    // MENU LIGA MX
+    [
+        'text' => 'LIGA MX',
+        'icon' => 'fas fa-futbol',
+        'submenu' => [
+
+            [
+                'text' => 'Quinielas',
+                'url' => '/quiniela',
+                'icon' => 'fas fa-fw fa-list',
+            ],
+
+            [
+                'text' => 'Jugadores',
+                'url' => '/jugadores',
+                'icon' => 'fas fa-fw fa-user',
+            ],
+
+            [
+                'text' => 'Jornadas',
+                'url' => '/jornada',
+                'icon' => 'fas fa-fw fa-calendar',
+            ],
+
+            [
+                'text' => 'Resultados',
+                'url' => '/resultados',
+                'icon' => 'fas fa-fw fa-futbol',
+            ],
+
+            [
+                'text' => 'Ganadores',
+                'url' => '/ganadores',
+                'icon' => 'fas fa-fw fa-trophy',
+            ],
         ],
     ],
+
+    // MENU MUNDIAL
+    [
+        'text' => 'MUNDIAL',
+        'icon' => 'fas fa-globe',
+        'submenu' => [
+
+            [
+                'text' => 'Quinielas',
+                'url' => '/mundial/quiniela',
+                'icon' => 'fas fa-fw fa-list',
+            ],
+
+            [
+                'text' => 'Jugadores',
+                'url' => '/mundial/jugadores',
+                'icon' => 'fas fa-fw fa-user',
+            ],
+
+            [
+                'text' => 'Fases',
+                'url' => '/mundial',
+                'icon' => 'fas fa-fw fa-calendar',
+            ],
+
+            [
+                'text' => 'Resultados',
+                'url' => '/mundial/resultados',
+                'icon' => 'fas fa-fw fa-futbol',
+            ],
+
+            [
+                'text' => 'Ganadores',
+                'url' => '/mundial/ganadores',
+                'icon' => 'fas fa-fw fa-trophy',
+            ],
+        ],
+    ],
+
+    // ESTADISTICAS
+    [
+        'text' => 'ESTADISTICAS',
+        'icon' => 'fas fa-chart-bar',
+        'submenu' => [
+
+            [
+                'text' => 'Pagos liga MX',
+                'url' => '/pagos',
+                'icon' => 'fas fa-credit-card',
+            ],
+
+            [
+                'text' => 'Pagos mundial',
+                'url' => '/pagos',
+                'icon' => 'fas fa-credit-card',
+            ],
+
+            [
+                'text' => 'Archivo',
+                'url' => '/archivo',
+                'icon' => 'fas fa-archive',
+            ],
+
+            [
+                'text' => 'Bolsa acumulada',
+                'url' => '#',
+                'icon' => 'fas fa-wallet',
+            ],
+        ],
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------
