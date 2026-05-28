@@ -42,9 +42,6 @@ Route::post('/jornada/{id}/cerrar', [JornadaController::class, 'cerrar'])
 
 Route::get('/ganadores', [JornadaController::class, 'todosLosGanadores'])->name('ganadores.todos');
 Route::delete('/jornada/{id}', [JornadaController::class, 'destroy'])->name('jornada.destroy');
-Route::get('/fase-de-grupos', function () {
-    return redirect('/public/jornada/numero/18');
-});
 Route::get('/jornada/numero/{numero}', [JornadaController::class, 'showByNumero'])->name('jornada.show.numero');
 Route::get('/ganadores/pdf/{numero}', [JornadaController::class, 'pdfFinal'])
     ->name('ganadores.pdf');
