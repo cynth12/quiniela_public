@@ -38,7 +38,7 @@
         <div class="card shadow-sm">
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h3 class="card-title">Partidos de la jornada</h3>
+                    <h3 class="card-title">Partidos de la fase de grupos</h3>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('quiniela.store') }}" id="formQuiniela">
