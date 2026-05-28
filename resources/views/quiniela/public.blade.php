@@ -15,7 +15,7 @@
 
     <div class="container py-4">
         <h2 class="jornada-info">
-            📆 Fase de grupos Mundial 2026 {{ $jornada['fecha'] }} – 💰 {{ $jornada['premio'] }}
+           ⚽ Fase de grupos Mundial 2026 {{ $jornada['fecha'] }} – 💰 {{ $jornada['premio'] }}
         </h2>
 
         @php
