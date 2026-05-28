@@ -19,8 +19,8 @@
             @forelse($ganadores as $ganador)
                 <tr>
                     <td>{{ $ganador->numero }}</td>
-                    <td>{{ $ganador->quiniela->id }}</td>
-                    <td>{{ $ganador->jugador->nombre }}</td>
+                    <td>{{ $ganador->quiniela->id ?? 'Sin quiniela' }}</td>
+                    <td>{{ $ganador->jugador->nombre ?? 'Sin jugador' }}</td>
                     <td>
                         @if ($ganador->posicion == 1)
                             🥇 Primer lugar

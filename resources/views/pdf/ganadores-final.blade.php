@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 
     <title>
-        Resultados Jornada {{ $jornada->numero }}
+        Resultados 
     </title>
 
     <style>
@@ -120,7 +120,7 @@
  <br><br>
 
     <h1>
-         Resultados Finales Jornada {{ $jornada->numero }}
+         Resultados Finales 
     </h1>
 
     <h3>

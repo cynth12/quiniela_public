@@ -4,7 +4,7 @@
     <meta charset="utf-8">
 
     <title>
-        Avance Jornada {{ $jornada->numero }}
+        Avance 
     </title>
 
     <style>
@@ -60,7 +60,7 @@
 <body>
 
     <h1>
-         Avance Jornada {{ $jornada->numero }}
+         Avance 
     </h1>
 
 

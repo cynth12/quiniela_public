@@ -394,7 +394,7 @@ class JornadaController extends Controller
 
         $pdf = Pdf::loadView('pdf.ganadores-final', compact('jornada', 'reporte'));
 
-        return $pdf->download('resultado-final-jornada-' . $numero . '.pdf');
+        return $pdf->download('resultado-final.pdf');
     }
 
     public function pdfAvance($numero)
@@ -421,6 +421,6 @@ class JornadaController extends Controller
 
         $pdf = Pdf::loadView('pdf.avance', compact('jornada', 'quinielas', 'resultados'));
 
-        return $pdf->download('avance-jornada-' . $numero . '.pdf');
+        return $pdf->download('avance-jornada.pdf');
     }
 }
