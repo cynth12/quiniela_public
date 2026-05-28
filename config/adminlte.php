@@ -314,14 +314,6 @@ return [
         'label_color' => 'bg-green',
     ],
 
-    // BOTON CREAR JORNADA mundial
-    [
-        'text' => 'Crear Fase',
-        'url' => '/jornada/create',
-        'icon' => 'far fa-fw fa-file',
-        'label_color' => 'lime',
-    ],
-
     // MENU LIGA MX
     [
         'text' => 'LIGA MX',
@@ -360,44 +352,6 @@ return [
         ],
     ],
 
-    // MENU MUNDIAL
-    [
-        'text' => 'MUNDIAL',
-        'icon' => 'fas fa-globe',
-        'submenu' => [
-
-            [
-                'text' => 'Quinielas',
-                'url' => '/mundial/quiniela',
-                'icon' => 'fas fa-fw fa-list',
-            ],
-
-            [
-                'text' => 'Jugadores',
-                'url' => '/mundial/jugadores',
-                'icon' => 'fas fa-fw fa-user',
-            ],
-
-            [
-                'text' => 'Fases',
-                'url' => '/mundial',
-                'icon' => 'fas fa-fw fa-calendar',
-            ],
-
-            [
-                'text' => 'Resultados',
-                'url' => '/mundial/resultados',
-                'icon' => 'fas fa-fw fa-futbol',
-            ],
-
-            [
-                'text' => 'Ganadores',
-                'url' => '/mundial/ganadores',
-                'icon' => 'fas fa-fw fa-trophy',
-            ],
-        ],
-    ],
-
     // ESTADISTICAS
     [
         'text' => 'ESTADISTICAS',
@@ -409,13 +363,6 @@ return [
                 'url' => '/pagos',
                 'icon' => 'fas fa-credit-card',
             ],
-
-            [
-                'text' => 'Pagos mundial',
-                'url' => '/pagos',
-                'icon' => 'fas fa-credit-card',
-            ],
-
             [
                 'text' => 'Archivo',
                 'url' => '/archivo',
