@@ -21,16 +21,129 @@ class JornadaController extends Controller
 
     public function create()
     {
-        $equipos = ['América', 'Atlas', 'Chivas', 'Puebla', 'Cruz Azul', 'Pumas', 'Tigres', 'Toluca', 'Monterrey', 'Santos', 'Pachuca', 'Querétaro', 'Necaxa', 'Mazatlán', 'Juárez', 'León', 'Tijuana', 'Atlético San Luis'];
-        return view('jornada.create', compact('equipos'));
+        $equipos = [
+
+    // Liga MX
+    'América',
+    'Atlas',
+    'Atlético San Luis',
+    'Cruz Azul',
+    'Chivas',
+    'Juárez',
+    'León',
+    'Mazatlán',
+    'Monterrey',
+    'Necaxa',
+    'Pachuca',
+    'Puebla',
+    'Pumas',
+    'Querétaro',
+    'Santos',
+    'Tigres',
+    'Tijuana',
+    'Toluca',
+
+    // Mundial 2026
+    'México',
+    'Estados Unidos',
+    'Canadá',
+
+    'Argentina',
+    'Brasil',
+    'Uruguay',
+    'Colombia',
+    'Ecuador',
+    'Paraguay',
+    'Panama',
+    'Curazao',
+
+    'Francia',
+    'España',
+    'Alemania',
+    'Portugal',
+    'Italia',
+    'Inglaterra',
+    'Países Bajos',
+    'Bélgica',
+    'Croacia',
+    'Dinamarca',
+    'Suiza',
+    'Serbia',
+    'Suecia',
+    'Noruega',
+    'Austria',
+    'Ucrania',
+    'Bosnia y Herzegovina',
+    'Republica Checa',
+    'Turquía',
+    'Ubekistan',
+
+
+    'Japón',
+    'Corea del Sur',
+    'Australia',
+    'Arabia Saudita',
+    'Irán',
+    'Haiti',
+    'Qatar',
+    'Escocia',
+    'Cabo Verde',
+
+
+    'Marruecos',
+    'Algeria',
+    'Iraq',
+    'Sudafrica',
+    'Senegal',
+    'Nigeria',
+    'Camerún',
+    'Egipto',
+    'Jordania',
+    'Túnez',
+    'Argelia',
+    'DR Congo',
+    'Costa de Marfil',
+    'Ghana',
+
+    'Nueva Zelanda'
+];
+
+        $jornadas = [
+            'Jornada 1',
+            'Jornada 2',
+            'Jornada 3',
+            'Jornada 4',
+            'Jornada 5',
+            'Jornada 6',
+            'Jornada 7',
+            'Jornada 8',
+            'Jornada 9',
+            'Jornada 10',
+            'Jornada 11',
+            'Jornada 12',
+            'Jornada 13',
+            'Jornada 14',
+            'Jornada 15',
+            'Jornada 16',
+            'Jornada 17',
+
+            // fases especiales
+            'Fase de grupos',
+            'Octavos de final',
+            'Cuartos de final',
+            'Semifinal',
+            'Final',
+        ];
+
+        return view('jornada.create', compact('equipos', 'jornadas'));
     }
 
     public function store(Request $request)
     {
         $totalJornadas = Jornada::count();
 
-        if ($totalJornadas >= 17) {
-            return back()->with('error', 'Ya se han creado las 17 jornadas permitidas.');
+        if ($totalJornadas >= 25) {
+            return back()->with('error', 'Ya se alcanzó el límite de jornadas permitidas.');
         }
 
         $fechaFormateada = Carbon::createFromFormat('d/m/Y', $request->fecha)->format('Y-m-d');
@@ -88,109 +201,83 @@ class JornadaController extends Controller
     }
 
     public function guardarAvance(Request $request, $numero)
-{
-    $jornada = Jornada::with('partidos')
-        ->where('numero', $numero)
-        ->firstOrFail();
+    {
+        $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
-    // guardar SOLO resultados llenados
-    foreach ($request->resultados as $partido_numero => $resultado) {
-
-        if (!empty($resultado)) {
-
-            Resultado::updateOrCreate(
-                [
-                    'numero' => $numero,
-                    'partido_numero' => $partido_numero
-                ],
-                [
-                    'resultado_oficial' => strtoupper($resultado)
-                ]
-            );
-        }
-    }
-
-    return redirect()
-        ->route('jornada.avance', $numero)
-        ->with('success', '📊 Avance actualizado correctamente.');
-}
-
-    public function cerrarPorNumero(Request $request, $numero)
-{
-    $jornada = Jornada::with('partidos')
-        ->where('numero', $numero)
-        ->firstOrFail();
-
-    // guardar resultados oficiales
-    foreach ($request->resultados as $partido_numero => $resultado) {
-
-        Resultado::updateOrCreate(
-            [
-                'numero' => $numero,
-                'partido_numero' => $partido_numero
-            ],
-            [
-                'resultado_oficial' => strtoupper($resultado)
-            ]
-        );
-    }
-
-    // validar que TODOS estén llenos
-    $completos = Resultado::where('numero', $numero)
-        ->whereNotNull('resultado_oficial')
-        ->count();
-
-    if ($completos < $jornada->partidos->count()) {
-
-        return back()->with(
-            'error',
-            'Completa todos los resultados oficiales antes de calcular ganadores.'
-        );
-    }
-
-    // cerrar jornada
-    $jornada->cerrada = true;
-    $jornada->save();
-
-    // borrar resultados anteriores
-    Ganador::where('numero', $numero)->delete();
-
-    // resultados oficiales
-    $resultados = Resultado::where('numero', $numero)
-        ->pluck('resultado_oficial', 'partido_numero');
-
-    // quinielas participantes
-    $quinielas = Quiniela::with('respuestas', 'jugador')
-        ->where('numero', $numero)
-        ->get();
-
-    foreach ($quinielas as $quiniela) {
-
-        $aciertos = 0;
-
-        foreach ($quiniela->respuestas as $respuesta) {
-
-            if (
-                isset($resultados[$respuesta->partido_numero]) &&
-                strtolower($resultados[$respuesta->partido_numero]) ==
-                strtolower($respuesta->respuesta)
-            ) {
-                $aciertos++;
+        // guardar SOLO resultados llenados
+        foreach ($request->resultados as $partido_numero => $resultado) {
+            if (!empty($resultado)) {
+                Resultado::updateOrCreate(
+                    [
+                        'numero' => $numero,
+                        'partido_numero' => $partido_numero,
+                    ],
+                    [
+                        'resultado_oficial' => strtoupper($resultado),
+                    ],
+                );
             }
         }
 
-        Ganador::create([
-            'numero' => $numero,
-            'quiniela_id' => $quiniela->id,
-            'jugador_id' => $quiniela->jugador_id,
-            'aciertos' => $aciertos,
-        ]);
+        return redirect()->route('jornada.avance', $numero)->with('success', '📊 Avance actualizado correctamente.');
     }
 
-    return redirect()
-        ->route('resultados.index')
-        ->with('success', '🏆 Ganadores calculados correctamente.');
-}
+    public function cerrarPorNumero(Request $request, $numero)
+    {
+        $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
+
+        // guardar resultados oficiales
+        foreach ($request->resultados as $partido_numero => $resultado) {
+            Resultado::updateOrCreate(
+                [
+                    'numero' => $numero,
+                    'partido_numero' => $partido_numero,
+                ],
+                [
+                    'resultado_oficial' => strtoupper($resultado),
+                ],
+            );
+        }
+
+        // validar que TODOS estén llenos
+        $completos = Resultado::where('numero', $numero)->whereNotNull('resultado_oficial')->count();
+
+        if ($completos < $jornada->partidos->count()) {
+            return back()->with('error', 'Completa todos los resultados oficiales antes de calcular ganadores.');
+        }
+
+        // cerrar jornada
+        $jornada->cerrada = true;
+        $jornada->save();
+
+        // borrar resultados anteriores
+        Ganador::where('numero', $numero)->delete();
+
+        // resultados oficiales
+        $resultados = Resultado::where('numero', $numero)->pluck('resultado_oficial', 'partido_numero');
+
+        // quinielas participantes
+        $quinielas = Quiniela::with('respuestas', 'jugador')->where('numero', $numero)->get();
+
+        foreach ($quinielas as $quiniela) {
+            $aciertos = 0;
+
+            foreach ($quiniela->respuestas as $respuesta) {
+                if (isset($resultados[$respuesta->partido_numero]) && strtolower($resultados[$respuesta->partido_numero]) == strtolower($respuesta->respuesta)) {
+                    $aciertos++;
+                }
+            }
+
+            Ganador::create([
+                'numero' => $numero,
+                'quiniela_id' => $quiniela->id,
+                'jugador_id' => $quiniela->jugador_id,
+                'aciertos' => $aciertos,
+            ]);
+        }
+
+        return redirect()->route('resultados.index')->with('success', '🏆 Ganadores calculados correctamente.');
+    }
 
     public function showByNumero($numero)
     {
@@ -215,179 +302,125 @@ class JornadaController extends Controller
     }
 
     public function todosLosGanadores()
-{
-    $ganadores = Ganador::with('jugador', 'quiniela')
-        ->orderBy('numero', 'desc')
-        ->orderBy('posicion')
-        ->orderByDesc('aciertos')
-        ->get();
+    {
+        $ganadores = Ganador::with('jugador', 'quiniela')->orderBy('numero', 'desc')->orderBy('posicion')->orderByDesc('aciertos')->get();
 
-    return view('jornada.ganadores', compact('ganadores'));
-}
-
-public function avance($numero)
-{
-    $jornada = Jornada::with('partidos')
-        ->where('numero', $numero)
-        ->firstOrFail();
-
-    $resultados = Resultado::where('numero', $numero)
-        ->pluck('resultado_oficial', 'partido_numero');
-
-    $quinielas = Quiniela::with('jugador', 'respuestas')
-        ->where('numero', $numero)
-        ->get();
-
-    $reporte = [];
-
-    foreach ($quinielas as $quiniela) {
-
-        $aciertos = 0;
-
-        foreach ($quiniela->respuestas as $respuesta) {
-
-            if (
-                isset($resultados[$respuesta->partido_numero]) &&
-                strtolower($resultados[$respuesta->partido_numero]) ==
-                strtolower($respuesta->respuesta)
-            ) {
-                $aciertos++;
-            }
-        }
-
-        $reporte[] = [
-            'jugador' => $quiniela->jugador->nombre ?? 'Sin nombre',
-            'quiniela_id' => $quiniela->id,
-            'aciertos' => $aciertos,
-        ];
+        return view('jornada.ganadores', compact('ganadores'));
     }
 
-    usort($reporte, function ($a, $b) {
-        return $b['aciertos'] <=> $a['aciertos'];
-    });
+    public function avance($numero)
+    {
+        $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
-    return view('jornada.avance', compact(
-        'jornada',
-        'reporte',
-        'resultados'
-    ));
-}
+        $resultados = Resultado::where('numero', $numero)->pluck('resultado_oficial', 'partido_numero');
 
-public function pdfFinal($numero)
-{
-    $jornada = Jornada::with('partidos')
-        ->where('numero', $numero)
-        ->firstOrFail();
+        $quinielas = Quiniela::with('jugador', 'respuestas')->where('numero', $numero)->get();
 
-    // resultados oficiales
-    $resultados = Resultado::where('numero', $numero)
-        ->pluck('resultado_oficial', 'partido_numero');
+        $reporte = [];
 
-    // TODAS las quinielas participantes
-    $quinielas = Quiniela::with('jugador', 'respuestas')
-        ->where('numero', $numero)
-        ->get();
+        foreach ($quinielas as $quiniela) {
+            $aciertos = 0;
 
-    $reporte = [];
-
-    foreach ($quinielas as $quiniela) {
-
-        $aciertos = 0;
-
-        $detallePartidos = [];
-
-        foreach ($jornada->partidos as $partido) {
-
-            $respuestaJugador = $quiniela->respuestas
-                ->where('partido_numero', $partido->partido_numero)
-                ->first();
-
-            $respuesta = $respuestaJugador->respuesta ?? '-';
-
-            $resultadoOficial = $resultados[$partido->partido_numero] ?? '-';
-
-            $acerto = strtolower($respuesta) == strtolower($resultadoOficial);
-
-            if ($acerto) {
-                $aciertos++;
+            foreach ($quiniela->respuestas as $respuesta) {
+                if (isset($resultados[$respuesta->partido_numero]) && strtolower($resultados[$respuesta->partido_numero]) == strtolower($respuesta->respuesta)) {
+                    $aciertos++;
+                }
             }
 
-            $detallePartidos[] = [
-                'partido' => $partido->local . ' vs ' . $partido->visitante,
-                'respuesta' => strtoupper($respuesta),
-                'oficial' => strtoupper($resultadoOficial),
-                'acerto' => $acerto,
+            $reporte[] = [
+                'jugador' => $quiniela->jugador->nombre ?? 'Sin nombre',
+                'quiniela_id' => $quiniela->id,
+                'aciertos' => $aciertos,
             ];
         }
 
-        $reporte[] = [
-            'jugador' => $quiniela->jugador->nombre,
-            'quiniela_id' => $quiniela->id,
-            'aciertos' => $aciertos,
-            'detalle' => $detallePartidos,
-        ];
+        usort($reporte, function ($a, $b) {
+            return $b['aciertos'] <=> $a['aciertos'];
+        });
+
+        return view('jornada.avance', compact('jornada', 'reporte', 'resultados'));
     }
 
-    // ordenar por más aciertos
-    usort($reporte, function ($a, $b) {
-        return $b['aciertos'] <=> $a['aciertos'];
-    });
+    public function pdfFinal($numero)
+    {
+        $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
-    $pdf = Pdf::loadView(
-        'pdf.ganadores-final',
-        compact('jornada', 'reporte')
-    );
+        // resultados oficiales
+        $resultados = Resultado::where('numero', $numero)->pluck('resultado_oficial', 'partido_numero');
 
-    return $pdf->download('resultado-final-jornada-'.$numero.'.pdf');
-}
+        // TODAS las quinielas participantes
+        $quinielas = Quiniela::with('jugador', 'respuestas')->where('numero', $numero)->get();
 
+        $reporte = [];
 
-public function pdfAvance($numero)
-{
-    $jornada = Jornada::with('partidos')
-        ->where('numero', $numero)
-        ->firstOrFail();
+        foreach ($quinielas as $quiniela) {
+            $aciertos = 0;
 
-    $resultados = Resultado::where('numero', $numero)
-        ->pluck('resultado_oficial', 'partido_numero');
+            $detallePartidos = [];
 
-    $quinielas = Quiniela::with('jugador', 'respuestas')
-        ->where('numero', $numero)
-        ->get();
+            foreach ($jornada->partidos as $partido) {
+                $respuestaJugador = $quiniela->respuestas->where('partido_numero', $partido->partido_numero)->first();
 
-    foreach ($quinielas as $quiniela) {
+                $respuesta = $respuestaJugador->respuesta ?? '-';
 
-    $aciertos = 0;
+                $resultadoOficial = $resultados[$partido->partido_numero] ?? '-';
 
-    foreach ($quiniela->respuestas as $respuesta) {
+                $acerto = strtolower($respuesta) == strtolower($resultadoOficial);
 
-        if (
-            isset($resultados[$respuesta->partido_numero]) &&
-            strtolower($resultados[$respuesta->partido_numero]) ==
-            strtolower($respuesta->respuesta)
-        ) {
-            $aciertos++;
+                if ($acerto) {
+                    $aciertos++;
+                }
+
+                $detallePartidos[] = [
+                    'partido' => $partido->local . ' vs ' . $partido->visitante,
+                    'respuesta' => strtoupper($respuesta),
+                    'oficial' => strtoupper($resultadoOficial),
+                    'acerto' => $acerto,
+                ];
+            }
+
+            $reporte[] = [
+                'jugador' => $quiniela->jugador->nombre,
+                'quiniela_id' => $quiniela->id,
+                'aciertos' => $aciertos,
+                'detalle' => $detallePartidos,
+            ];
         }
+
+        // ordenar por más aciertos
+        usort($reporte, function ($a, $b) {
+            return $b['aciertos'] <=> $a['aciertos'];
+        });
+
+        $pdf = Pdf::loadView('pdf.ganadores-final', compact('jornada', 'reporte'));
+
+        return $pdf->download('resultado-final-jornada-' . $numero . '.pdf');
     }
 
-    $quiniela->aciertos = $aciertos;
-}
+    public function pdfAvance($numero)
+    {
+        $jornada = Jornada::with('partidos')->where('numero', $numero)->firstOrFail();
 
-$quinielas = $quinielas->sortByDesc('aciertos');
+        $resultados = Resultado::where('numero', $numero)->pluck('resultado_oficial', 'partido_numero');
 
-    $pdf = Pdf::loadView(
-        'pdf.avance',
-        compact(
-            'jornada',
-            'quinielas',
-            'resultados'
-        )
-    );
+        $quinielas = Quiniela::with('jugador', 'respuestas')->where('numero', $numero)->get();
 
-    
+        foreach ($quinielas as $quiniela) {
+            $aciertos = 0;
 
-    return $pdf->download(
-        'avance-jornada-'.$numero.'.pdf'
-    );
-}
+            foreach ($quiniela->respuestas as $respuesta) {
+                if (isset($resultados[$respuesta->partido_numero]) && strtolower($resultados[$respuesta->partido_numero]) == strtolower($respuesta->respuesta)) {
+                    $aciertos++;
+                }
+            }
+
+            $quiniela->aciertos = $aciertos;
+        }
+
+        $quinielas = $quinielas->sortByDesc('aciertos');
+
+        $pdf = Pdf::loadView('pdf.avance', compact('jornada', 'quinielas', 'resultados'));
+
+        return $pdf->download('avance-jornada-' . $numero . '.pdf');
+    }
 }
