@@ -98,20 +98,20 @@
     </div>
 
     <div class="header">
-        <div class="titulo">⚽ COMPROBANTE OFICIAL</div>
+        <div class="titulo">COMPROBANTE OFICIAL</div>
         <div class="subtitulo">Fase de Grupos Mundial 2026</div>
     </div>
 
     <div class="card">
         <table class="info">
             <tr>
-                <td><strong>👤 Jugador:</strong> {{ $jugador->nombre }}</td>
-                <td><strong>💳 Estado:</strong> {{ ucfirst($pago->estado) }}</td>
+                <td><strong> Jugador:</strong> {{ $jugador->nombre }}</td>
+                <td><strong> Estado:</strong> {{ ucfirst($pago->estado) }}</td>
             </tr>
 
             <tr>
-                <td><strong>💰 Monto:</strong> ${{ number_format($pago->monto, 2) }}</td>
-                <td><strong>📅 Fecha:</strong> {{ $pago->fecha_pago }}</td>
+                <td><strong> Monto:</strong> ${{ number_format($pago->monto, 2) }}</td>
+                <td><strong> Fecha:</strong> {{ $pago->fecha_pago }}</td>
             </tr>
 
             <tr>
