@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Quiniela;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Pago;
 use App\Models\Jugador;
-use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+use MercadoPago\MercadoPagoConfig;
+use MercadoPago\Client\Preference\PreferenceClient;
 
 class PagoController extends Controller
 {
     public function index()
     {
-        $pagos = Pago::with('jugador')->orderBy('fecha_pago', 'desc')->get();
+        $pagos = Pago::with('jugador')
+            ->orderBy('fecha_pago', 'desc')
+            ->get();
+
         return view('pagos.index', compact('pagos'));
     }
 
@@ -23,51 +28,52 @@ class PagoController extends Controller
         try {
             $pago = Pago::with('jugador')->findOrFail($id);
 
-            // Cambiar estado
             $pago->estado = 'pagado';
             $pago->save();
 
             $jugador = $pago->jugador;
 
-            // Traer las quinielas del jugador en esa jornada
-            $quinielas = \App\Models\Quiniela::where('jugador_id', $jugador->id)
+            $quinielas = Quiniela::where('jugador_id', $jugador->id)
                 ->where('numero', $pago->numero)
-                ->with('respuestas') // si tienes relación con las opciones elegidas
+                ->with('respuestas')
                 ->get();
 
-            // Generar PDF con jugador, pago y quinielas
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago', 'quinielas'));
+            $pdf = Pdf::loadView('pdf.comprobante', compact('jugador', 'pago', 'quinielas'));
+
             $pdfPath = "comprobantes/comprobante_{$jugador->id}_{$pago->id}.pdf";
 
-            \Illuminate\Support\Facades\Storage::disk('public')->put($pdfPath, $pdf->output());
+            Storage::disk('public')->put($pdfPath, $pdf->output());
 
             $pago->update([
                 'comprobante_pdf' => $pdfPath,
             ]);
 
-            return redirect()->route('pagos.index')->with('success', '✅ Pago marcado como pagado y comprobante generado.');
+            return redirect()
+                ->route('pagos.index')
+                ->with('success', '✅ Pago marcado como pagado y comprobante generado.');
+
         } catch (\Exception $e) {
             return redirect()
                 ->route('pagos.index')
-                ->with('error', '❌ Error al marcar como pagado: ' . $e->getMessage());
+                ->with('error', '❌ Error: ' . $e->getMessage());
         }
     }
 
-
     public function comprobante($id)
-{
-    $pago = Pago::with('jugador')->findOrFail($id);
+    {
+        $pago = Pago::with('jugador')->findOrFail($id);
 
-    $jugador = $pago->jugador;
-    $quinielas = \App\Models\Quiniela::where('jugador_id', $jugador->id)
-        ->where('numero', $pago->numero)
-        ->with('respuestas')
-        ->get();
+        $jugador = $pago->jugador;
 
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.comprobante', compact('jugador', 'pago', 'quinielas'));
-    return $pdf->download("comprobante_{$jugador->id}_{$pago->id}.pdf");
-}
+        $quinielas = Quiniela::where('jugador_id', $jugador->id)
+            ->where('numero', $pago->numero)
+            ->with('respuestas')
+            ->get();
 
+        $pdf = Pdf::loadView('pdf.comprobante', compact('jugador', 'pago', 'quinielas'));
+
+        return $pdf->download("comprobante_{$jugador->id}_{$pago->id}.pdf");
+    }
 
     public function destroy($id)
     {
@@ -79,6 +85,53 @@ class PagoController extends Controller
 
         $pago->delete();
 
-        return redirect()->route('pagos.index')->with('success', 'Pago y comprobante eliminados correctamente.');
+        return redirect()
+            ->route('pagos.index')
+            ->with('success', 'Pago eliminado correctamente.');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 💳 GENERAR LINK MERCADO PAGO (WHATSAPP FLOW)
+    |--------------------------------------------------------------------------
+    */
+
+    public function generarLink($token)
+{
+    $jugador = Jugador::where('token_pago', $token)->firstOrFail();
+
+    $quinielas = Quiniela::where('jugador_id', $jugador->id)
+        ->where('numero', $jugador->numero_actual)
+        ->get();
+
+    if ($quinielas->isEmpty()) {
+        return response()->json([
+            'error' => 'No hay quinielas para pagar'
+        ]);
+    }
+
+    $total = $quinielas->count() * 10;
+
+    MercadoPagoConfig::setAccessToken(env('MP_ACCESS_TOKEN'));
+
+    $client = new PreferenceClient();
+
+    $preference = $client->create([
+        "items" => [
+            [
+                "title" => "Quiniela ZAS - " . $jugador->nombre,
+                "quantity" => 1,
+                "unit_price" => $total,
+                "currency_id" => "MXN"
+            ]
+        ],
+        "external_reference" => $token
+    ]);
+
+    return response()->json([
+        'link_pago' => $preference->init_point,
+        'total' => $total,
+        'nombre' => $jugador->nombre
+    ]);
+}
 }

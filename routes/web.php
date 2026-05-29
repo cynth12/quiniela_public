@@ -91,6 +91,6 @@ Route::post('/pagos/{id}/comprobante', [PagoController::class, 'generarComproban
 // Rutas de retorno de Mercado Pago 
 //Route::post('webhook/mp', [PagoController::class, 'webhook'])->name('mp.webhook');
 
-
+Route::get('/mp/pago/{token}', [PagoController::class, 'generarLink']);
 
 
