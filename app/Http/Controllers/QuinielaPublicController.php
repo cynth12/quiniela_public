@@ -61,6 +61,19 @@ class QuinielaPublicController extends Controller
             // Crear UN jugador por envío
             $primerQ = $quinielas[0];
 
+            // 🚫 VALIDAR SI LA JORNADA YA ESTÁ CERRADA
+            $jornada = Jornada::where('numero', $primerQ['numero'])->first();
+
+            if ($jornada && $jornada->cerrada) {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'error' => '⚠️ Esta jornada ya fue cerrada. Ya no se aceptan quinielas.',
+                    ],
+                    403,
+                );
+            }
+
             $jugador = Jugador::create([
                 'nombre' => $primerQ['nombre'],
                 'telefono' => $primerQ['telefono'],
