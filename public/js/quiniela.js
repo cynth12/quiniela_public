@@ -1,4 +1,4 @@
-console.log('✅ Script quinielas.js cargado correctamente');
+console.log('🔥 NUEVO JS CON MERCADO PAGO');
 
 let quinielas = [];
 const costoPorQuiniela = 10;
