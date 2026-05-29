@@ -28,12 +28,13 @@
 
                 {{-- Jornadas normales --}}
                 @for ($j = 1; $j <= 17; $j++)
-                    <option value="Jornada {{ $j }}">
+                    <option value="{{ $j }}">
                         Jornada {{ $j }}
                     </option>
                 @endfor
 
-                {{-- Mundial / liguilla --}}
+            
+            {{-- Mundial / liguilla --}}
                 <option value="18">Fase de grupos</option>
                 <option value="19">Octavos de final</option>
                 <option value="20">Cuartos de final</option>
